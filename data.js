@@ -1,7 +1,7 @@
 /* ALL SITE CONTENT LIVES HERE.
    Photos: put image files in the images/ folder, then replace an empty {} in a
    project's "photos" list with {src:"images/name.jpg", alt:"What it shows", caption:"Optional caption"}.
-   Project photos flank the text on wide screens and form a two-column gallery on narrow screens. */
+   Each project's photos correspond to its sections in order. */
 window.SITE = {
   name: "Kevin Chang",
   tagline: "Mechanical and Artificial Intelligence Systems Engineering student at Western University",
@@ -42,7 +42,7 @@ window.SITE = {
           "I sketched each line path as a 3D spline in the assembly, then created the lines as an in-context part by sweeping along those paths.",
           "The lines use the standard 3/16 inch brake line diameter."] }
       ],
-      photos: [{}, {}, {}, {}]
+      photos: [{}, {}]
     },
     {
       id: "botbrawl", nav: "Bot Brawl", title: "Bot Brawl",
@@ -58,7 +58,7 @@ window.SITE = {
           "I teach team members the general concepts behind developing combat robot weapons:"],
           bullets: ["Gyroscopic effects", "Reusability of parts", "Bite angle", "Asymmetry"] }
       ],
-      photos: [{}, {}, {}, {}]
+      photos: [{}, {}, {}]
     },
     {
       id: "aquaponics", nav: "Aquaponics", title: "Aquaponics System",
@@ -72,7 +72,7 @@ window.SITE = {
         { heading: "Presenting", text: [
           "I presented the research and design information."] }
       ],
-      photos: [{}, {}, {}, {}]
+      photos: [{}, {}, {}]
     }
   ],
 

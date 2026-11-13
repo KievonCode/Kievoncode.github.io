@@ -46,13 +46,12 @@
   } else {
     const p = S.projects.find((x) => x.id === page);
     document.title = p.title + " | " + S.name;
-    const sidePhotos = [[], []];
-    p.photos.forEach((photo, index) => sidePhotos[index % 2].push(photo));
     app.append(wrap(
       h("div", { class: "page-head" }, h("h1", {}, p.title), h("p", { class: "meta" }, p.meta), h("p", { class: "lead" }, p.summary)),
-      h("div", { class: "project-layout" },
-        photos(sidePhotos[0], "project-photos"),
-        h("div", { class: "project-content" }, p.sections.map((s) => section(s.heading, (s.text || []).map((t) => h("p", {}, t)), s.bullets ? list(s.bullets) : ""))),
-        photos(sidePhotos[1], "project-photos"))));
+      h("div", { class: "project-sections" }, p.sections.map((s, index) =>
+        h("section", { class: "project-section" },
+          h("div", { class: "project-copy" }, h("h2", {}, s.heading),
+            ...(s.text || []).map((t) => h("p", {}, t)), s.bullets ? list(s.bullets) : ""),
+          photos([p.photos[index] || {}], "section-photo"))))));
   }
 })();
