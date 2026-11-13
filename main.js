@@ -11,6 +11,61 @@
   const section = (title, ...body) => h("section", {}, h("h2", {}, title), ...body);
   const list = (a) => h("ul", {}, a.map((x) => h("li", {}, x)));
 
+  const photoDisplay = (arr, label) => {
+    if (arr.length < 2) return photos(arr, "section-photo");
+
+    const slides = arr.map((photo, index) => h("div", {
+      class: "carousel-slide",
+      role: "group",
+      "aria-roledescription": "slide",
+      "aria-label": (index + 1) + " of " + arr.length,
+      "aria-hidden": index === 0 ? null : "true"
+    }, photos([photo], "carousel-photos")));
+    const track = h("div", { class: "carousel-track" }, ...slides);
+    const status = h("span", { class: "carousel-status", "aria-live": "polite" }, "1 of " + arr.length);
+    const previous = h("button", { type: "button", "aria-label": "Previous " + label + " photo" }, "Previous");
+    const next = h("button", { type: "button", "aria-label": "Next " + label + " photo" }, "Next");
+    const carousel = h("div", {
+      class: "section-photo photo-carousel",
+      role: "region",
+      "aria-roledescription": "carousel",
+      "aria-label": label + " photos",
+      tabindex: "0"
+    },
+    h("div", { class: "carousel-viewport" }, track),
+    h("div", { class: "carousel-controls" }, previous, status, next));
+
+    let activeIndex = 0;
+    const show = (index) => {
+      activeIndex = (index + arr.length) % arr.length;
+      slides.forEach((slide, slideIndex) => {
+        if (slideIndex === activeIndex) slide.removeAttribute("aria-hidden");
+        else slide.setAttribute("aria-hidden", "true");
+      });
+      track.style.transform = "translateX(-" + (activeIndex * 100) + "%)";
+      status.textContent = (activeIndex + 1) + " of " + arr.length;
+    };
+    previous.addEventListener("click", () => show(activeIndex - 1));
+    next.addEventListener("click", () => show(activeIndex + 1));
+    carousel.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") show(activeIndex - 1);
+      if (event.key === "ArrowRight") show(activeIndex + 1);
+    });
+
+    let touchStartX = null;
+    carousel.addEventListener("touchstart", (event) => {
+      touchStartX = event.changedTouches[0].clientX;
+    }, { passive: true });
+    carousel.addEventListener("touchend", (event) => {
+      if (touchStartX === null) return;
+      const distance = event.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(distance) > 40) show(activeIndex + (distance < 0 ? 1 : -1));
+      touchStartX = null;
+    }, { passive: true });
+
+    return carousel;
+  };
+
   const pages = [["home", "Home"], ...S.projects.map((p) => [p.id, p.nav]), ["about", "About"]];
   document.getElementById("site-header").append(wrap(
     h("a", { class: "brand", href: "index.html" }, S.name),
@@ -48,10 +103,12 @@
     document.title = p.title + " | " + S.name;
     app.append(wrap(
       h("div", { class: "page-head" }, h("h1", {}, p.title), h("p", { class: "meta" }, p.meta), h("p", { class: "lead" }, p.summary)),
-      h("div", { class: "project-sections" }, p.sections.map((s, index) =>
-        h("section", { class: "project-section" },
+      h("div", { class: "project-sections" }, p.sections.map((s, index) => {
+        const sectionPhotos = s.photos || [p.photos[index] || {}];
+        return h("section", { class: "project-section" + (s.centered ? " centered-copy" : "") },
           h("div", { class: "project-copy" }, h("h2", {}, s.heading),
             ...(s.text || []).map((t) => h("p", {}, t)), s.bullets ? list(s.bullets) : ""),
-          photos([p.photos[index] || {}], "section-photo"))))));
+          sectionPhotos.length ? photoDisplay(sectionPhotos, s.heading) : "");
+      }))));
   }
 })();

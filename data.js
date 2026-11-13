@@ -1,7 +1,8 @@
 /* ALL SITE CONTENT LIVES HERE.
    Photos: put image files in the images/ folder, then replace an empty {} in a
    project's "photos" list with {src:"images/name.jpg", alt:"What it shows", caption:"Optional caption"}.
-   Each project's photos correspond to its sections in order. */
+   Each project's photos correspond to its sections in order. A section can define
+   its own "photos" list to override its matching project-level photo slot. */
 window.SITE = {
   name: "Kevin Chang",
   tagline: "Mechanical and Artificial Intelligence Systems Engineering student at Western University",
@@ -49,16 +50,19 @@ window.SITE = {
       meta: "Mechanical Weapons Team Lead",
       summary: "Developed an asymmetrical horizontal spinner weapon blade concept, testing the balance with a 3D printed prototype, taught team members the general concepts behind designing combat robot parts.",
       sections: [
-        { heading: "My role", text: [
-          "I’m the mechanical weapons team lead for WE First’s Bot Brawl team."] },
-        { heading: "Asymmetric spinner design", text: [
-          "I developed an asymmetric horizontal spinner weapon blade concept. The center of mass is balanced so the weapon stays stable while spinning.",
-          "I tested the balance with a 3D printed prototype."] },
+        { heading: "My Role", text: [
+          "I am the mechanical weapons team lead for WE First's Bot Brawl. This is the first year that the team is running, so I am responsible for doing the appropriate research and teaching the team members."],
+          centered: true, photos: [] },
+        { heading: "Asymmetric Weapon Blade", text: [
+          "There are many benefits to using an asymmetric weapon blade rather than a symmetrical blade, however it introduces new design challenges. An asymmetric blade increases weapon bite and results in harder hits, however it wears unevenly and is difficult to balance.",
+          "I modeled an asymmetric blade in OnShape, using mass tools to align the center of mass with the rotation axis, and tested the balance with a 3D printed prototype."],
+          photos: [{}, {}] },
         { heading: "Teaching the team", text: [
           "I teach team members the general concepts behind developing combat robot weapons:"],
-          bullets: ["Gyroscopic effects", "Reusability of parts", "Bite angle", "Asymmetry"] }
+          bullets: ["Gyroscopic effects", "Reusability of parts", "Bite angle", "Asymmetry"],
+          photos: [{}] }
       ],
-      photos: [{}, {}, {}]
+      photos: []
     },
     {
       id: "aquaponics", nav: "Aquaponics", title: "Aquaponics System",
