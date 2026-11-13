@@ -20,12 +20,13 @@ window.SITE = {
       meta: "Team member",
       summary: "CAD and analyze components using FEA in SolidWorks, manufactured carbon fiber components, performed pre competition checklists.",
       sections: [
-        { heading: "Rear wing swan mount", text: [
-          "The swan mount on the previous season’s rear wing failed, so I worked on a new design concept to fix it.",
-          "I used FEA to check that the new design can withstand greater forces than the mount it replaces."],
+        { heading: "Rear Wing Swan Mount", text: [
+          "The carbon fiber swan mount had catastrophically failed during the previous season, so the team replaced it with an aluminum mount temporarily. I was tasked with designing a new carbon fibermount that would be able to withstand the increased downforce of the new wing.",
+          "I worked in a team to research concepts, design a new mount in SolidWorks, and analyze using FEA."],
           photos: [
             { src: "images/formula-rear-wing-mount-cad.jpg", alt: "CAD assembly showing the rear wing swan mount on the car", caption: "Rear Wing Swan Mount - CAD Model" },
-            { src: "images/formula-rear-wing-fea-results.jpg", alt: "Stress simulation results for the rear wing swan mount with annotated arrows", caption: "Rear Wing Swan Mount - FEA Results" }
+            { src: "images/formula-rear-wing-fea-results.jpg", alt: "Stress simulation results for the rear wing swan mount with annotated arrows", caption: "Rear Wing Swan Mount - FEA Results" },
+            { src: "images/formula-rear-wing-temporary-aluminum-mount.jpg", alt: "Temporary aluminum mount supporting the rear wing on the car", caption: "Rear Wing Swan Mount - Temporary Aluminum Mount" }
           ] },
         { heading: "Carbon aerodynamic components", text: [
           "I manufactured carbon aerodynamic components and assisted with the carbon layup process and sanding."] },
