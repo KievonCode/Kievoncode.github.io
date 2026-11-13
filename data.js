@@ -22,7 +22,11 @@ window.SITE = {
       sections: [
         { heading: "Rear wing swan mount", text: [
           "The swan mount on the previous season’s rear wing failed, so I worked on a new design concept to fix it.",
-          "I used FEA to check that the new design can withstand greater forces than the mount it replaces."] },
+          "I used FEA to check that the new design can withstand greater forces than the mount it replaces."],
+          photos: [
+            { src: "images/formula-rear-wing-fea-results.jpg", alt: "Stress simulation results for the rear wing swan mount with annotated arrows", caption: "Rear Wing Swan Mount - FEA Results" },
+            { src: "images/formula-rear-wing-mount-cad.jpg", alt: "CAD assembly showing the rear wing swan mount on the car", caption: "Rear Wing Swan Mount - CAD Model" }
+          ] },
         { heading: "Carbon aerodynamic components", text: [
           "I manufactured carbon aerodynamic components and assisted with the carbon layup process and sanding."] },
         { heading: "Chassis assembly", text: [
@@ -53,14 +57,17 @@ window.SITE = {
         { heading: "My Role", text: [
           "I am the mechanical weapons team lead for WE First's Bot Brawl. This is the first year that the team is running, so I am responsible for doing the appropriate research and teaching the team members."],
           centered: true, photos: [] },
+        { heading: "Teaching the Team", text: [
+          "I teach team members the general concepts behind developing combat robot weapons:"],
+          bullets: ["Gyroscopic effects", "Reusability of parts", "Bite angle", "Material selection"],
+          photos: [] },
         { heading: "Asymmetric Weapon Blade", text: [
           "There are many benefits to using an asymmetric weapon blade rather than a symmetrical blade, however it introduces new design challenges. An asymmetric blade increases weapon bite and results in harder hits, however it wears unevenly and is difficult to balance.",
           "I modeled an asymmetric blade in OnShape, using mass tools to align the center of mass with the rotation axis, and tested the balance with a 3D printed prototype."],
-          photos: [{}, {}] },
-        { heading: "Teaching the team", text: [
-          "I teach team members the general concepts behind developing combat robot weapons:"],
-          bullets: ["Gyroscopic effects", "Reusability of parts", "Bite angle", "Asymmetry"],
-          photos: [{}] }
+          photos: [
+            { src: "images/botbrawl-blade-prototype.jpg", alt: "3D-printed black asymmetric spinner blade prototype on a table", caption: "3D-printed asymmetric blade prototype" },
+            { src: "images/botbrawl-blade-design.png", alt: "Dimensioned CAD sketch of the asymmetric spinner blade", caption: "Dimensioned blade design sketch" }
+          ] }
       ],
       photos: []
     },
