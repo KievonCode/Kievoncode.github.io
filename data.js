@@ -1,83 +1,92 @@
-/* ALL SITE CONTENT LIVES HERE. To add a project, copy one {...} block inside
-   "projects", paste it at the top of the list, and edit the text.
-   Put images in the images/ folder and reference them like "images/my-photo.jpg". */
+/* ALL SITE CONTENT LIVES HERE.
+   Photos: put image files in the images/ folder, then replace an empty {} in a
+   project's "photos" list with {src:"images/name.jpg", alt:"What it shows", caption:"Optional caption"}.
+   Add more {} entries for more photo squares. */
 window.SITE = {
   name: "Kevin Chang",
   tagline: "Engineering student building racing hardware, combat robots and data tools.",
   email: "kevinchang1822@gmail.com",
-  github: "",    // e.g. "https://github.com/yourname"
-  linkedin: "",  // e.g. "https://www.linkedin.com/in/yourname"
+  links: { linkedin: "", instagram: "", github: "" },  // paste full URLs, e.g. "https://www.instagram.com/yourname"
 
-  titleBlock: [
-    ["Studying", "Mechanical Engineering and Artificial Intelligence Systems Engineering"],
-    ["School", "Western University, London, ON"],
-    ["Teams", "Western Formula Racing, WE First Bot Brawl"],
-    ["Tools", "SolidWorks (CSWA), OnShape, Python, Java, C++, MATLAB"]
+  bio: [
+    "I’m an engineering student at Western University, studying Mechanical Engineering and Artificial Intelligence Systems Engineering.",
+    "I work on racing hardware with Western Formula Racing, lead the mechanical weapons team for a combat robot, and have built Python tools for supply chain research. Outside class I’m into motorsports, robotics, photography and videography."
   ],
 
   projects: [
     {
-      title: "Asymmetric spinner weapon",
-      date: "November 2026 to present",
-      summary: "Horizontal spinner blade concept for a combat robot, with the center of mass balanced for stability. Balance checked on a 3D printed prototype.",
-      tags: ["Combat robotics", "Prototyping"],
-      image: "", imageAlt: "", link: ""
+      id: "formula", nav: "Formula", title: "Western Formula Racing",
+      meta: "Team member, Sep 2025 to present",
+      summary: "A new rear wing mount, carbon aero parts, chassis assembly and pre-competition checks.",
+      sections: [
+        { heading: "Rear wing swan mount", text: [
+          "The swan mount on the previous season’s rear wing failed, so I worked on a new design concept to fix it.",
+          "I used FEA to check that the new design can withstand greater forces than the mount it replaces."] },
+        { heading: "Carbon aerodynamic components", text: [
+          "I manufactured carbon aerodynamic components and assisted with the carbon layup process and sanding."] },
+        { heading: "Chassis assembly", text: [
+          "I assembled components on the chassis, including drilling mounting holes, mounting the rear jack bar and installing electrical components inside the chassis."] },
+        { heading: "Safety and rules", text: [
+          "Before competitions I completed mock safety and rulebook checks."] }
+      ],
+      photos: [{}, {}, {}, {}]
     },
     {
-      title: "Formula rear wing swan mount",
-      date: "2025 to 2026 season",
-      summary: "Redesigned the rear wing mount that failed the previous season, using FEA to confirm the new design handles higher loads.",
-      tags: ["Western Formula Racing", "FEA", "Carbon fibre"],
-      image: "", imageAlt: "", link: ""
+      id: "baja", nav: "Baja", title: "Baja brake line routing",
+      meta: "Brake system CAD, Baja SAE car",
+      summary: "Brake line routing from the reservoirs to the calipers, modeled in the car’s suspension and brake assembly.",
+      sections: [
+        { heading: "What I modeled", text: [
+          "I was in charge of routing the brake lines from the reservoirs to the calipers. I modeled the routing pattern in CAD, inside the assembly that contains the suspension and braking system."] },
+        { heading: "How it was built", text: [
+          "I sketched each line path as a 3D spline in the assembly, then created the lines as an in-context part by sweeping along those paths.",
+          "The lines use the standard 3/16 inch brake line diameter."] }
+      ],
+      photos: [{}, {}, {}, {}]
     },
     {
-      title: "Supply chain research tool",
-      date: "June to August 2026",
-      summary: "Python program that uses a local LLM to map upstream and downstream supply chains, then filters supplier and earnings data to back test trading strategies.",
-      tags: ["Python", "Local LLM", "Back testing"],
-      image: "", imageAlt: "", link: ""
+      id: "botbrawl", nav: "Bot Brawl", title: "Bot Brawl combat robot",
+      meta: "Mechanical weapons team lead, WE First, Nov 2026 to present",
+      summary: "An asymmetric horizontal spinner weapon, and teaching the team how combat robot weapons work.",
+      sections: [
+        { heading: "My role", text: [
+          "I’m the mechanical weapons team lead for WE First’s Bot Brawl team."] },
+        { heading: "Asymmetric spinner design", text: [
+          "I developed an asymmetric horizontal spinner weapon blade concept. The center of mass is balanced so the weapon stays stable while spinning.",
+          "I tested the balance with a 3D printed prototype."] },
+        { heading: "Teaching the team", text: [
+          "I teach team members the general concepts behind developing combat robot weapons:"],
+          bullets: ["Gyroscopic effects", "Reusability of parts", "Bite angle", "Asymmetry"] }
+      ],
+      photos: [{}, {}, {}, {}]
     },
     {
-      title: "Modular aquaponics system",
-      date: "January to April 2026",
-      summary: "Concepts for an efficient aquaponics system running on local wastewater. Designed a fully modular system in OnShape and presented the research.",
-      tags: ["OnShape", "Concept design", "Presentation"],
-      image: "", imageAlt: "", link: ""
+      id: "aquaponics", nav: "Aquaponics", title: "Modular aquaponics system",
+      meta: "Design team member, Jan to Apr 2026",
+      summary: "A concept for an efficient aquaponics system that runs on local wastewater.",
+      sections: [
+        { heading: "Concepts", text: [
+          "The team generated multiple concepts for an efficient aquaponics system running off local wastewater."] },
+        { heading: "Modular design", text: [
+          "I designed a fully modular system in OnShape."] },
+        { heading: "Presenting", text: [
+          "I presented the research and design information."] }
+      ],
+      photos: [{}, {}, {}, {}]
     }
   ],
 
   experience: [
-    {
-      title: "Mechanical Weapons Team Lead", subtitle: "WE First, Bot Brawl",
-      dates: "Nov 2026 to present", location: "London, ON",
-      bullets: [
-        "Developed an asymmetric horizontal spinner weapon and balanced its center of mass for stability.",
-        "Taught teammates weapon design concepts: gyroscopic effects, part reusability, bite angle and asymmetry."
-      ]
-    },
-    {
-      title: "Team Member", subtitle: "Western Formula Racing",
-      dates: "Sep 2025 to present", location: "London, ON",
-      bullets: [
-        "Designed a new rear wing swan mount and validated it with FEA.",
-        "Manufactured carbon aerodynamic components and assisted with layup and sanding.",
-        "Assembled chassis components, including the rear jack bar and electrical parts.",
-        "Ran mock safety and rulebook checks before competitions."
-      ]
-    },
-    {
-      title: "Quantitative Analyst Intern", subtitle: "LXC Technologies",
-      dates: "Jun to Aug 2026", location: "Remote",
-      bullets: [
-        "Integrated a local LLM into a Python program that researches supply chains for a large list of companies.",
-        "Built a Python tool that finds the highest correlations between suppliers and back tests strategies on historical data."
-      ]
-    }
+    { title: "Mechanical Weapons Team Lead", org: "WE First, Bot Brawl", dates: "Nov 2026 to present", page: "botbrawl" },
+    { title: "Team Member", org: "Western Formula Racing", dates: "Sep 2025 to present", page: "formula" },
+    { title: "Quantitative Analyst Intern", org: "LXC Technologies (remote)", dates: "Jun to Aug 2026", bullets: [
+      "Integrated a local LLM into a Python program that researches the upstream and downstream supply chains of a large list of companies.",
+      "Built a Python program that filters supply chain and earnings data for the highest correlation between suppliers, and back tests trading strategies against historical data."] }
   ],
 
   education: [
-    { title: "B.E.Sc. Mechanical Engineering", subtitle: "Western University. Dean’s Honor List, 82.5% YWA", dates: "Sep 2025 to Apr 2030", location: "London, ON" },
-    { title: "B.E.Sc. Artificial Intelligence Systems Engineering", subtitle: "Western University", dates: "Sep 2026 to Apr 2030", location: "London, ON" }
+    { title: "B.E.Sc. Mechanical Engineering", org: "Western University. Dean’s Honor List, 82.5% YWA", dates: "Sep 2025 to Apr 2030" },
+    { title: "B.E.Sc. Artificial Intelligence Systems Engineering", org: "Western University", dates: "Sep 2026 to Apr 2030" }
   ],
 
   skills: {

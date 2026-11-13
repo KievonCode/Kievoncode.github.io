@@ -1,37 +1,47 @@
-:root{--paper:#F2F4F6;--ink:#17212B;--steel:#566370;--rule:#C3CBD3;--cobalt:#1D4ED8;--sheet:#FBFCFD}
+:root{--bg:#0C1117;--surface:#141B24;--line:#263241;--text:#E7EDF3;--muted:#8D9EB0;--accent:#38BDF8;color-scheme:dark}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-body{margin:0;background:var(--paper);color:var(--ink);font:400 1.0625rem/1.6 "Barlow",system-ui,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text);font:400 1.0625rem/1.65 "Barlow",system-ui,sans-serif}
 h1,h2,h3{font-family:"Barlow Semi Condensed","Arial Narrow",sans-serif;line-height:1.1;margin:0}
-a{color:var(--cobalt);text-underline-offset:3px}
-a:focus-visible,.skip:focus{outline:3px solid var(--cobalt);outline-offset:3px}
-.skip{position:absolute;left:-999px}.skip:focus{left:1rem;top:1rem;background:var(--sheet);padding:.5rem 1rem}
-.hero,main,footer{max-width:64rem;margin:0 auto;padding:0 1.25rem}
-.hero{padding-top:clamp(3rem,10vw,7rem)}
-.hero h1{font-size:clamp(3.5rem,13vw,8.5rem);font-weight:700;letter-spacing:-.02em}
-#tagline{max-width:34rem;font-size:1.25rem;color:var(--steel);margin:1rem 0 2.5rem}
-.titleblock{display:grid;grid-template-columns:max-content 1fr;margin:0;border:2px solid var(--ink);background:var(--sheet);max-width:46rem}
-.titleblock dt,.titleblock dd{margin:0;padding:.6rem .9rem;border-top:1px solid var(--rule)}
-.titleblock dt:first-of-type,.titleblock dt:first-of-type+dd{border-top:0}
-.titleblock dt{font:700 .95rem "Barlow Semi Condensed",sans-serif;color:var(--steel);border-right:1px solid var(--ink)}
-section{padding-top:4rem}
-h2{font-size:2rem;font-weight:700;padding-bottom:.5rem;border-bottom:2px solid var(--ink);margin-bottom:1.5rem}
-.projects{display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:1.25rem}
-.project{background:var(--sheet);border:1px solid var(--ink);display:flex;flex-direction:column}
-.project img{width:100%;aspect-ratio:16/10;object-fit:cover;border-bottom:1px solid var(--ink)}
-.project .body{padding:1rem 1.1rem 1.2rem}
-.project h3{font-size:1.4rem}
-.meta{color:var(--steel);font-size:.95rem;margin:.25rem 0 .6rem}
-.tags{list-style:none;display:flex;flex-wrap:wrap;gap:.4rem;padding:0;margin:.8rem 0 0}
-.tags li{border:1px solid var(--rule);padding:.05rem .5rem;font-size:.9rem;color:var(--steel)}
-.timeline article{display:grid;grid-template-columns:11rem 1fr;gap:.5rem 2rem;padding:1.1rem 0;border-top:1px solid var(--rule)}
+a{color:var(--accent);text-underline-offset:3px}
+a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.skip{position:absolute;left:-999px}.skip:focus{left:1rem;top:1rem;background:var(--surface);padding:.5rem 1rem;z-index:9}
+.wrap{max-width:62rem;margin:0 auto;padding:0 1.25rem}
+header.site{position:sticky;top:0;z-index:5;background:rgba(12,17,23,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.site .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.4rem 2rem;padding-top:.8rem;padding-bottom:.8rem}
+.brand{font:700 1.3rem "Barlow Semi Condensed",sans-serif;color:var(--text);text-decoration:none}
+nav ul{display:flex;flex-wrap:wrap;gap:.2rem 1.4rem;list-style:none;margin:0;padding:0}
+nav a{color:var(--muted);text-decoration:none;padding:.2rem 0;border-bottom:2px solid transparent}
+nav a:hover{color:var(--text)}
+nav a[aria-current=page]{color:var(--text);border-color:var(--accent)}
+.hero{position:relative;isolation:isolate;padding:clamp(3.5rem,11vw,7.5rem) 0 3rem}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.4;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:3rem 3rem;-webkit-mask-image:linear-gradient(#000 30%,transparent);mask-image:linear-gradient(#000 30%,transparent)}
+h1{font-size:clamp(2.75rem,9vw,5rem);font-weight:700;letter-spacing:-.02em}
+.hero h1{font-size:clamp(3.5rem,13vw,8rem)}
+.lead{max-width:38rem;font-size:1.25rem;color:var(--muted);margin:1rem 0 0}
+.page-head{padding:clamp(2.5rem,7vw,4.5rem) 0 1rem}
+.meta{color:var(--muted);font-size:.95rem;margin:.3rem 0 .6rem}
+section{padding-top:3rem}
+h2{font-size:1.7rem;font-weight:700;padding-bottom:.5rem;border-bottom:1px solid var(--line);margin-bottom:1.25rem}
+section p,section ul{max-width:42rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:1rem}
+.cards{max-width:none}
+a.card{display:block;background:var(--surface);border:1px solid var(--line);padding:1.25rem;color:var(--text);text-decoration:none}
+a.card:hover,a.card:focus-visible{border-color:var(--accent)}
+a.card h3{font-size:1.5rem}a.card p{margin:.3rem 0 0}a.card .meta{margin:.3rem 0 .6rem}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:1rem;max-width:none}
+figure{margin:0}
+.ph,figure img{width:100%;aspect-ratio:1;border:1px solid var(--line)}
+.ph{display:grid;place-items:center;background:var(--surface);border-style:dashed;color:var(--muted);font-size:.9rem}
+figure img{object-fit:cover}
+figcaption{color:var(--muted);font-size:.9rem;margin-top:.4rem}
+.links{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:.6rem 1.5rem}
+.soon{color:var(--muted)}
+.timeline article{display:grid;grid-template-columns:11rem 1fr;gap:.4rem 2rem;padding:1rem 0;border-top:1px solid var(--line);max-width:none}
 .timeline article:first-child{border-top:0;padding-top:0}
-.timeline .when{color:var(--steel);font-size:.95rem}
-.timeline h3{font-size:1.35rem}
-.timeline ul{margin:.5rem 0 0;padding-left:1.1rem}
+.timeline h3{font-size:1.3rem}.timeline ul{margin:.4rem 0 0;padding-left:1.1rem}
 .skills{display:grid;grid-template-columns:11rem 1fr;gap:.5rem 2rem;margin:0}
 .skills dt{font:700 1.1rem "Barlow Semi Condensed",sans-serif}.skills dd{margin:0}
-footer{padding-top:4rem;padding-bottom:5rem}
-footer a{margin-right:1.5rem}
-@media (max-width:40rem){.timeline article,.skills{grid-template-columns:1fr}.titleblock{grid-template-columns:1fr}.titleblock dt{border-right:0;padding-bottom:0}.titleblock dd{border-top:0;padding-top:.1rem}}
+footer.site{margin-top:5rem;border-top:1px solid var(--line);padding:1.5rem 0;color:var(--muted);font-size:.95rem}
+@media (max-width:40rem){.timeline article,.skills{grid-template-columns:1fr}}
