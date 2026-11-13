@@ -24,8 +24,8 @@ window.SITE = {
           "The swan mount on the previous season’s rear wing failed, so I worked on a new design concept to fix it.",
           "I used FEA to check that the new design can withstand greater forces than the mount it replaces."],
           photos: [
-            { src: "images/formula-rear-wing-fea-results.jpg", alt: "Stress simulation results for the rear wing swan mount with annotated arrows", caption: "Rear Wing Swan Mount - FEA Results" },
-            { src: "images/formula-rear-wing-mount-cad.jpg", alt: "CAD assembly showing the rear wing swan mount on the car", caption: "Rear Wing Swan Mount - CAD Model" }
+            { src: "images/formula-rear-wing-mount-cad.jpg", alt: "CAD assembly showing the rear wing swan mount on the car", caption: "Rear Wing Swan Mount - CAD Model" },
+            { src: "images/formula-rear-wing-fea-results.jpg", alt: "Stress simulation results for the rear wing swan mount with annotated arrows", caption: "Rear Wing Swan Mount - FEA Results" }
           ] },
         { heading: "Carbon aerodynamic components", text: [
           "I manufactured carbon aerodynamic components and assisted with the carbon layup process and sanding."] },

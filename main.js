@@ -105,7 +105,8 @@
       h("div", { class: "page-head" }, h("h1", {}, p.title), h("p", { class: "meta" }, p.meta), h("p", { class: "lead" }, p.summary)),
       h("div", { class: "project-sections" }, p.sections.map((s, index) => {
         const sectionPhotos = s.photos || [p.photos[index] || {}];
-        return h("section", { class: "project-section" + (s.centered ? " centered-copy" : "") },
+        const centered = s.centered || sectionPhotos.length === 0;
+        return h("section", { class: "project-section" + (centered ? " centered-copy" : "") },
           h("div", { class: "project-copy" }, h("h2", {}, s.heading),
             ...(s.text || []).map((t) => h("p", {}, t)), s.bullets ? list(s.bullets) : ""),
           sectionPhotos.length ? photoDisplay(sectionPhotos, s.heading) : "");
