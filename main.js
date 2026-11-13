@@ -18,7 +18,7 @@
       h("li", {}, h("a", { href: url(id), "aria-current": id === page ? "page" : null }, label)))))));
   document.getElementById("site-footer").append("© " + new Date().getFullYear() + " " + S.name);
 
-  const photos = (arr) => h("div", { class: "photos" }, arr.map((p) => h("figure", {},
+  const photos = (arr, className = "photos") => h("div", { class: className }, arr.map((p) => h("figure", {},
     p.src ? h("img", { src: p.src, alt: p.alt || "", loading: "lazy" }) : h("div", { class: "ph", "aria-hidden": "true" }, "Photo coming soon"),
     p.caption ? h("figcaption", {}, p.caption) : "")));
 
@@ -46,9 +46,13 @@
   } else {
     const p = S.projects.find((x) => x.id === page);
     document.title = p.title + " | " + S.name;
+    const sidePhotos = [[], []];
+    p.photos.forEach((photo, index) => sidePhotos[index % 2].push(photo));
     app.append(wrap(
       h("div", { class: "page-head" }, h("h1", {}, p.title), h("p", { class: "meta" }, p.meta), h("p", { class: "lead" }, p.summary)),
-      p.sections.map((s) => section(s.heading, (s.text || []).map((t) => h("p", {}, t)), s.bullets ? list(s.bullets) : "")),
-      section("Photos", photos(p.photos))));
+      h("div", { class: "project-layout" },
+        photos(sidePhotos[0], "project-photos"),
+        h("div", { class: "project-content" }, p.sections.map((s) => section(s.heading, (s.text || []).map((t) => h("p", {}, t)), s.bullets ? list(s.bullets) : ""))),
+        photos(sidePhotos[1], "project-photos"))));
   }
 })();

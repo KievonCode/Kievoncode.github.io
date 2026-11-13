@@ -1,7 +1,7 @@
 /* ALL SITE CONTENT LIVES HERE.
    Photos: put image files in the images/ folder, then replace an empty {} in a
    project's "photos" list with {src:"images/name.jpg", alt:"What it shows", caption:"Optional caption"}.
-   Add more {} entries for more photo squares. */
+   Project photos flank the text on wide screens and form a two-column gallery on narrow screens. */
 window.SITE = {
   name: "Kevin Chang",
   tagline: "Mechanical and Artificial Intelligence Systems Engineering student at Western University",

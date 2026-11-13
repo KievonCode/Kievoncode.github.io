@@ -31,6 +31,9 @@ a.card{display:block;background:var(--surface);border:1px solid var(--line);padd
 a.card:hover,a.card:focus-visible{border-color:var(--accent)}
 a.card h3{font-size:1.5rem}a.card p{margin:.3rem 0 0}a.card .meta{margin:.3rem 0 .6rem}
 .photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:1rem;max-width:none}
+.project-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);align-items:start;gap:1.25rem}
+.project-photos{align-self:stretch;display:flex;flex-direction:column;justify-content:space-around;gap:1rem;padding-top:3rem}
+.project-content{min-width:0}
 figure{margin:0}
 .ph,figure img{width:100%;aspect-ratio:1;border:1px solid var(--line)}
 .ph{display:grid;place-items:center;background:var(--surface);border-style:dashed;color:var(--muted);font-size:.9rem}
@@ -44,4 +47,5 @@ figcaption{color:var(--muted);font-size:.9rem;margin-top:.4rem}
 .skills{display:grid;grid-template-columns:11rem 1fr;gap:.5rem 2rem;margin:0}
 .skills dt{font:700 1.1rem "Barlow Semi Condensed",sans-serif}.skills dd{margin:0}
 footer.site{margin-top:5rem;border-top:1px solid var(--line);padding:1.5rem 0;color:var(--muted);font-size:.95rem}
+@media (max-width:52rem){.project-layout{grid-template-columns:repeat(2,minmax(0,1fr))}.project-content{grid-column:1/-1;grid-row:1}.project-photos{grid-template-columns:repeat(2,minmax(0,1fr));padding-top:0}}
 @media (max-width:40rem){.timeline article,.skills{grid-template-columns:1fr}}
