@@ -4,7 +4,7 @@
    Add more {} entries for more photo squares. */
 window.SITE = {
   name: "Kevin Chang",
-  tagline: "Engineering student building racing hardware, combat robots and data tools.",
+  tagline: "Mechanical and Artificial Intelligence Systems Engineering student at Western University",
   email: "kevinchang1822@gmail.com",
   links: { linkedin: "", instagram: "", github: "" },  // paste full URLs, e.g. "https://www.instagram.com/yourname"
 
@@ -16,8 +16,8 @@ window.SITE = {
   projects: [
     {
       id: "formula", nav: "Formula", title: "Western Formula Racing",
-      meta: "Team member, Sep 2025 to present",
-      summary: "A new rear wing mount, carbon aero parts, chassis assembly and pre-competition checks.",
+      meta: "Team member",
+      summary: "CAD and analyze components using FEA in SolidWorks, manufactured carbon fiber components, performed pre competition checklists.",
       sections: [
         { heading: "Rear wing swan mount", text: [
           "The swan mount on the previous season’s rear wing failed, so I worked on a new design concept to fix it.",
@@ -32,9 +32,9 @@ window.SITE = {
       photos: [{}, {}, {}, {}]
     },
     {
-      id: "baja", nav: "Baja", title: "Baja brake line routing",
-      meta: "Brake system CAD, Baja SAE car",
-      summary: "Brake line routing from the reservoirs to the calipers, modeled in the car’s suspension and brake assembly.",
+      id: "baja", nav: "Baja", title: "Western Baja Racing",
+      meta: "Rear Suspension and Brakes Team Member",
+      summary: "Researched and designed routing of brake lines, modeled routing in CAD in coordination with other subsystems.",
       sections: [
         { heading: "What I modeled", text: [
           "I was in charge of routing the brake lines from the reservoirs to the calipers. I modeled the routing pattern in CAD, inside the assembly that contains the suspension and braking system."] },
@@ -45,9 +45,9 @@ window.SITE = {
       photos: [{}, {}, {}, {}]
     },
     {
-      id: "botbrawl", nav: "Bot Brawl", title: "Bot Brawl combat robot",
-      meta: "Mechanical weapons team lead, WE First, Nov 2026 to present",
-      summary: "An asymmetric horizontal spinner weapon, and teaching the team how combat robot weapons work.",
+      id: "botbrawl", nav: "Bot Brawl", title: "Bot Brawl",
+      meta: "Mechanical Weapons Team Lead",
+      summary: "Developed an asymmetrical horizontal spinner weapon blade concept, testing the balance with a 3D printed prototype, taught team members the general concepts behind designing combat robot parts.",
       sections: [
         { heading: "My role", text: [
           "I’m the mechanical weapons team lead for WE First’s Bot Brawl team."] },
@@ -61,9 +61,9 @@ window.SITE = {
       photos: [{}, {}, {}, {}]
     },
     {
-      id: "aquaponics", nav: "Aquaponics", title: "Modular aquaponics system",
-      meta: "Design team member, Jan to Apr 2026",
-      summary: "A concept for an efficient aquaponics system that runs on local wastewater.",
+      id: "aquaponics", nav: "Aquaponics", title: "Aquaponics System",
+      meta: "Design Team Member",
+      summary: "Designed a modular aquaponics system, created full CAD model of the system and its components, presented final product at Western University's ES1050 showcase.",
       sections: [
         { heading: "Concepts", text: [
           "The team generated multiple concepts for an efficient aquaponics system running off local wastewater."] },

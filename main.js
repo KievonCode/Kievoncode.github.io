@@ -26,7 +26,7 @@
     document.title = S.name + " | Portfolio";
     app.append(
       h("div", { class: "hero" }, wrap(h("h1", {}, S.name), h("p", { class: "lead" }, S.tagline))),
-      wrap(section("Projects", h("div", { class: "cards" }, S.projects.map((p) =>
+      wrap(section("Projects & Teams", h("div", { class: "cards" }, S.projects.map((p) =>
         h("a", { class: "card", href: url(p.id) }, h("h3", {}, p.title), h("p", { class: "meta" }, p.meta), h("p", {}, p.summary)))))));
   } else if (page === "about") {
     document.title = "About | " + S.name;
