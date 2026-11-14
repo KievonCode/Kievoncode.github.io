@@ -85,7 +85,7 @@
         h("a", { class: "card", href: url(p.id) }, h("h3", {}, p.title), h("p", { class: "meta" }, p.meta), h("p", {}, p.summary)))))));
   } else if (page === "about") {
     document.title = "About | " + S.name;
-    const links = [["LinkedIn", S.links.linkedin, 1], ["Instagram", S.links.instagram, 1], ["GitHub", S.links.github, 0], ["Email", S.email && "mailto:" + S.email, 0]];
+    const links = [["LinkedIn", S.links.linkedin, 1], ["GitHub", S.links.github, 0], [S.email, S.email && "mailto:" + S.email, 0]];
     app.append(wrap(
       h("div", { class: "page-head" }, h("h1", {}, "About me")),
       section("Bio", S.bio.map((t) => h("p", {}, t))),

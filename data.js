@@ -7,11 +7,11 @@ window.SITE = {
   name: "Kevin Chang",
   tagline: "Mechanical and Artificial Intelligence Systems Engineering student at Western University",
   email: "kevinchang1822@gmail.com",
-  links: { linkedin: "", instagram: "", github: "" },  // paste full URLs, e.g. "https://www.instagram.com/yourname"
+  links: { linkedin: "https://www.linkedin.com/in/kevin-chang-99557b300", github: "" },  // paste full URLs
 
   bio: [
     "I’m an engineering student at Western University, studying Mechanical Engineering and Artificial Intelligence Systems Engineering.",
-    "I work on racing hardware with Western Formula Racing, lead the mechanical weapons team for a combat robot, and have built Python tools for supply chain research. Outside class I’m into motorsports, robotics, photography and videography."
+    "I work on racing hardware with Western Formula Racing and Western Baja Racing, lead the mechanical weapons team for a combat robot, and have built Python tools for supply chain research. Outside class I’m into motorsports, robotics, photography and videography."
   ],
 
   projects: [
@@ -37,24 +37,24 @@ window.SITE = {
           "I assembled components on the chassis, including drilling mounting holes, mounting the rear jack bar and installing electrical components inside the chassis."],
           photos: [
             { src: "images/formula-chassis-assembly.jpg", alt: "Formula race car chassis in the workshop during assembly", caption: "Formula car chassis during assembly" }
-          ] },
-        { heading: "Safety and rules", text: [
-          "Before competitions I completed mock safety and rulebook checks."] }
+          ] }
       ],
-      photos: [{}, {}, {}, {}]
+      photos: []
     },
     {
       id: "baja", nav: "Baja", title: "Western Baja Racing",
       meta: "Rear Suspension and Brakes Team Member",
       summary: "Researched and designed routing of brake lines, modeled routing in CAD in coordination with other subsystems.",
       sections: [
-        { heading: "What I modeled", text: [
-          "I was in charge of routing the brake lines from the reservoirs to the calipers. I modeled the routing pattern in CAD, inside the assembly that contains the suspension and braking system."] },
-        { heading: "How it was built", text: [
-          "I sketched each line path as a 3D spline in the assembly, then created the lines as an in-context part by sweeping along those paths.",
-          "The lines use the standard 3/16 inch brake line diameter."] }
+        { heading: "Brake Lines", text: [
+          "I was tasked with routing the front and rear brake lines from the master cylinders to the calipers. I first looked at our two previous cars to see where the brake lines were routed and what obstacles might be in the way. Then I made multiple revisions of 3d sketches in SolidWorks to find the optimal route.",
+          "I sketched each line path as a 3D spline in the assembly, then created the lines as an in-context part by sweeping along those paths."],
+          photos: [
+            { src: "images/baja-brake-lines-assembly.png", alt: "Brake lines routed through a Baja rear suspension assembly", caption: "Brake lines in the rear suspension assembly" },
+            { src: "images/baja-brake-lines-routing.png", alt: "CAD view showing the 3D spline path for Baja brake-line routing", caption: "Brake line spline routing path" }
+          ] }
       ],
-      photos: [{}, {}]
+      photos: []
     },
     {
       id: "botbrawl", nav: "Bot Brawl", title: "Bot Brawl",
@@ -73,7 +73,8 @@ window.SITE = {
           "I modeled an asymmetric blade in OnShape, using mass tools to align the center of mass with the rotation axis, and tested the balance with a 3D printed prototype."],
           photos: [
             { src: "images/botbrawl-blade-prototype.jpg", alt: "3D-printed black asymmetric spinner blade prototype on a table", caption: "3D-printed asymmetric blade prototype" },
-            { src: "images/botbrawl-blade-design.png", alt: "Dimensioned CAD sketch of the asymmetric spinner blade", caption: "Dimensioned blade design sketch" }
+            { src: "images/botbrawl-blade-design.png", alt: "Dimensioned CAD sketch of the asymmetric spinner blade", caption: "Dimensioned blade design sketch" },
+            { src: "images/botbrawl-blade-prototype-sketch-2.png", alt: "Dimensioned second sketch of the asymmetric spinner blade with angle, radius, and diameter callouts", caption: "Second asymmetric blade prototype sketch" }
           ] }
       ],
       photos: []
@@ -84,20 +85,36 @@ window.SITE = {
       summary: "Designed a modular aquaponics system, created full CAD model of the system and its components, presented final product at Western University's ES1050 showcase.",
       sections: [
         { heading: "Design Process", text: [
-          "The team generated multiple concepts for an efficient aquaponics system running off local wastewater.",
-          "I designed a fully modular system in OnShape."],
+          "The team generated multiple concepts for an efficient aquaponics system running off local wastewater. After refining our ideas and deciding on a final design, I created a full CAD model of the system with all appropriate drawings and components."],
           photos: [
             { src: "images/aquaponics-design-isometric.png", alt: "Isometric CAD view of the modular aquaponics system", caption: "Aquaponics system isometric view" },
             { src: "images/aquaponics-design-grow-pod-holder.png", alt: "Square-cropped engineering drawing of the grow pod holder", caption: "Grow pod holder engineering drawing" },
             { src: "images/aquaponics-design-solar-panel-bracket.png", alt: "Square-cropped engineering drawing of the solar panel bracket", caption: "Solar panel bracket engineering drawing" },
             { src: "images/aquaponics-design-system-drawing.png", alt: "Square-cropped engineering drawing of the aquaponics system", caption: "Aquaponics system engineering drawing" }
           ] },
-        { heading: "Presenting", text: [
-          "I presented the research and design information."],
+        { heading: "Presentation", text: [
+          "Our design team presented our aquaponics system at Western University's ES1050 Design Showcase, and went through 3 judging sessions, where walked through our design process and answered questions about our final design."],
           photos: [
             { src: "images/aquaponics-presentation-board.jpg", alt: "Aquaponics project presentation board at the showcase", caption: "Aquaponics project presentation board" },
             { src: "images/aquaponics-presentation-team.jpg", alt: "Aquaponics project team at the showcase", caption: "Aquaponics project team" }
           ] }
+      ],
+      photos: []
+    },
+    {
+      id: "quant-research", nav: "Quantitative Research", title: "Quantitative Research",
+      meta: "Quantitative Analyst Intern",
+      summary: "I developed Python tools to research supply chains and back-test trading strategies.",
+      sections: [
+        { heading: "Supply Chain Research", text: [
+          "I Integrated a local large language model using Ollama to research upstream and downstream suppliers of a company. This model used DDGS to retrieve SEC documents (10-K, 10-Q, 8-K, etc.) and press reports related to a company, and use deductive reasoning to find which companies mentioned in the documents are suppliers to the company. The program then continues down a 6000 ticker list, and verifies that a previously listed upstream supplier also lists the company as a downstream supplier in its own list. All data is exported in CSV files."],
+          photos: [] },
+        { heading: "Correlation Analysis", text: [
+          "Developed a program that takes CSV files of upstream and downstream suppliers for a company, uses historical EOD data on report dates to calculate the correlation between the company and its listed suppliers. This program runs through the same 6000 ticker list, outputting a single CSV file with the highest correlation company pairs."],
+          photos: [] },
+        { heading: "Backtesting", text: [
+          "I used the high correlation company pairs to back-test multiple trading strategies using historical return data to see if a new strategy would have been successful if applied previously."],
+          photos: [] }
       ],
       photos: []
     }
@@ -106,9 +123,8 @@ window.SITE = {
   experience: [
     { title: "Mechanical Weapons Team Lead", org: "WE First, Bot Brawl", dates: "Nov 2026 to present", page: "botbrawl" },
     { title: "Team Member", org: "Western Formula Racing", dates: "Sep 2025 to present", page: "formula" },
-    { title: "Quantitative Analyst Intern", org: "LXC Technologies (remote)", dates: "Jun to Aug 2026", bullets: [
-      "Integrated a local LLM into a Python program that researches the upstream and downstream supply chains of a large list of companies.",
-      "Built a Python program that filters supply chain and earnings data for the highest correlation between suppliers, and back tests trading strategies against historical data."] }
+    { title: "Team Member", org: "Western Baja Racing", dates: "Nov 2026", page: "baja" },
+    { title: "Quantitative Analyst Intern", org: "LXC Technologies (remote)", dates: "Jun to Aug 2026", page: "quant-research" }
   ],
 
   education: [
