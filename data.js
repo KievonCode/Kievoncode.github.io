@@ -29,9 +29,15 @@ window.SITE = {
             { src: "images/formula-rear-wing-temporary-aluminum-mount.jpg", alt: "Temporary aluminum mount supporting the rear wing on the car", caption: "Rear Wing Swan Mount - Temporary Aluminum Mount" }
           ] },
         { heading: "Carbon aerodynamic components", text: [
-          "I manufactured carbon aerodynamic components and assisted with the carbon layup process and sanding."] },
+          "I manufactured carbon aerodynamic components and assisted with the carbon layup process and sanding."],
+          photos: [
+            { src: "images/formula-carbon-aerodynamic-components.jpg", alt: "Carbon fiber aerodynamic components in the workshop during fabrication", caption: "Carbon aerodynamic components during fabrication" }
+          ] },
         { heading: "Chassis assembly", text: [
-          "I assembled components on the chassis, including drilling mounting holes, mounting the rear jack bar and installing electrical components inside the chassis."] },
+          "I assembled components on the chassis, including drilling mounting holes, mounting the rear jack bar and installing electrical components inside the chassis."],
+          photos: [
+            { src: "images/formula-chassis-assembly.jpg", alt: "Formula race car chassis in the workshop during assembly", caption: "Formula car chassis during assembly" }
+          ] },
         { heading: "Safety and rules", text: [
           "Before competitions I completed mock safety and rulebook checks."] }
       ],
@@ -77,14 +83,23 @@ window.SITE = {
       meta: "Design Team Member",
       summary: "Designed a modular aquaponics system, created full CAD model of the system and its components, presented final product at Western University's ES1050 showcase.",
       sections: [
-        { heading: "Concepts", text: [
-          "The team generated multiple concepts for an efficient aquaponics system running off local wastewater."] },
-        { heading: "Modular design", text: [
-          "I designed a fully modular system in OnShape."] },
+        { heading: "Design Process", text: [
+          "The team generated multiple concepts for an efficient aquaponics system running off local wastewater.",
+          "I designed a fully modular system in OnShape."],
+          photos: [
+            { src: "images/aquaponics-design-isometric.png", alt: "Isometric CAD view of the modular aquaponics system", caption: "Aquaponics system isometric view" },
+            { src: "images/aquaponics-design-grow-pod-holder.png", alt: "Square-cropped engineering drawing of the grow pod holder", caption: "Grow pod holder engineering drawing" },
+            { src: "images/aquaponics-design-solar-panel-bracket.png", alt: "Square-cropped engineering drawing of the solar panel bracket", caption: "Solar panel bracket engineering drawing" },
+            { src: "images/aquaponics-design-system-drawing.png", alt: "Square-cropped engineering drawing of the aquaponics system", caption: "Aquaponics system engineering drawing" }
+          ] },
         { heading: "Presenting", text: [
-          "I presented the research and design information."] }
+          "I presented the research and design information."],
+          photos: [
+            { src: "images/aquaponics-presentation-board.jpg", alt: "Aquaponics project presentation board at the showcase", caption: "Aquaponics project presentation board" },
+            { src: "images/aquaponics-presentation-team.jpg", alt: "Aquaponics project team at the showcase", caption: "Aquaponics project team" }
+          ] }
       ],
-      photos: [{}, {}, {}]
+      photos: []
     }
   ],
 
