@@ -28,12 +28,12 @@ window.SITE = {
             { src: "images/formula-rear-wing-fea-results.jpg", alt: "Stress simulation results for the rear wing swan mount with annotated arrows", caption: "Rear Wing Swan Mount - FEA Results" },
             { src: "images/formula-rear-wing-temporary-aluminum-mount.jpg", alt: "Temporary aluminum mount supporting the rear wing on the car", caption: "Rear Wing Swan Mount - Temporary Aluminum Mount" }
           ] },
-        { heading: "Carbon aerodynamic components", text: [
+        { heading: "Carbon Aerodynamic Components", text: [
           "I manufactured carbon aerodynamic components and assisted with the carbon layup process and sanding."],
           photos: [
             { src: "images/formula-carbon-aerodynamic-components.jpg", alt: "Carbon fiber aerodynamic components in the workshop during fabrication", caption: "Carbon aerodynamic components during fabrication" }
           ] },
-        { heading: "Chassis assembly", text: [
+        { heading: "Chassis Assembly", text: [
           "I assembled components on the chassis, including drilling mounting holes, mounting the rear jack bar and installing electrical components inside the chassis."],
           photos: [
             { src: "images/formula-chassis-assembly.jpg", alt: "Formula race car chassis in the workshop during assembly", caption: "Formula car chassis during assembly" }
