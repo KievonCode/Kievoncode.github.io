@@ -81,8 +81,18 @@
     document.title = S.name + " | Portfolio";
     app.append(
       h("div", { class: "hero" }, wrap(h("h1", {}, S.name), h("p", { class: "lead" }, S.tagline))),
-      wrap(section("Projects & Teams", h("div", { class: "cards" }, S.projects.map((p) =>
-        h("a", { class: "card", href: url(p.id) }, h("h3", {}, p.title), h("p", { class: "meta" }, p.meta), h("p", {}, p.summary)))))));
+      wrap(h("section", { class: "home-list" },
+        h("h2", {}, "Selected work"),
+        h("p", { class: "home-list-note" }, "Select a project to read more"),
+        h("ul", {}, S.projects.map((p) =>
+          h("li", {},
+            h("a", { href: url(p.id), title: "Open " + p.title + " project" }, p.title),
+            h("span", { class: "home-list-meta" }, " — " + p.meta),
+            h("span", { class: "home-list-summary" }, " — " + p.summary),
+            h("span", { class: "home-list-arrow" }, "→")
+          ))
+        )
+      )))
   } else if (page === "about") {
     document.title = "About | " + S.name;
     const links = [["LinkedIn", S.links.linkedin, 1], ["GitHub", S.links.github, 0], [S.email, S.email && "mailto:" + S.email, 0]];
