@@ -13,9 +13,14 @@
   "use strict";
   var hero = document.getElementById("hero");
   if (!hero) return;
-  var canvas = document.createElement("canvas");
-  var ctx = canvas.getContext && canvas.getContext("2d");
+  // A fixed layer holding two canvases: the resting grid (drawn once) and the car (redrawn only
+  // when the camera angle steps). Brightness and the fade to black are CSS opacity on these
+  // layers, which the browser applies while compositing, so scrolling repaints nothing.
+  var box = document.createElement("div");
+  var gridCanvas = document.createElement("canvas"), carCanvas = document.createElement("canvas");
+  var ctx = gridCanvas.getContext && gridCanvas.getContext("2d");
   if (!ctx) return;
+  var lctx = carCanvas.getContext("2d");
 
   /* ---------- Tunables ---------- */
   var BG_GRAY = 27;                    // faint background grid on #0f1012
@@ -28,9 +33,10 @@
   var DIST = 5000;                     // camera distance in model units (mild perspective)
   var LIGHT = unit([-0.55, -0.35, 0.76]);
 
-  canvas.className = "hero-car";
-  canvas.setAttribute("aria-hidden", "true");
-  document.body.insertBefore(canvas, document.body.firstChild);
+  box.className = "hero-car";
+  box.setAttribute("aria-hidden", "true");
+  box.appendChild(gridCanvas); box.appendChild(carCanvas);
+  document.body.insertBefore(box, document.body.firstChild);
   document.body.classList.add("has-hero-car");
   var reduce = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
   var copy = hero.querySelector(".wrap");
@@ -197,9 +203,13 @@
 
   /* ---------- State ---------- */
   var W = 0, H = 0, dpr = 1, sp = 9, dotR = 1.6, cols = 0, rows = 0, gox = 0, goy = 0;
-  var model = null, scale = 1, ox = 0, oy = 0, placedPitch = null, carTop = 0, carBot = 0, gapMargin = 24;
-  var baseV = new Float32Array(0), carV = new Float32Array(0), zb = new Float32Array(0), cellPart = new Uint8Array(0), carList = [];
-  var bg = document.createElement("canvas"), pending = 0, last = "";
+  var model = null, scale = 1, ox = 0, oy = 0, carTop = 0, carBot = 0, gapMargin = 24, spaceTop = 0;
+  var carV = new Float32Array(0), zb = new Float32Array(0), cellPart = new Uint8Array(0), carList = [];
+  var cache = {}, layerStep = null, pending = 0, lastCopy = "", lastFade = "", lastLevel = "", buildToken = 0;
+  var PITCH_STEP = 0.25;                              // camera angle is quantized to this (degrees)
+  var LEVELS = 64;                                    // brightness levels for car dots (colour lookup table)
+  var LUT = [];
+  var coarsePointer = window.matchMedia ? window.matchMedia("(pointer: coarse)").matches : false;
 
   /* ---------- Projection onto the dot grid ----------
      The camera looks at the nose head-on (car axis pointing at the viewer), raised by `pitch`. */
@@ -213,7 +223,7 @@
       fn(i, x0 + s * k * Y, y0 + s * k * (depth * spch - Z * cp), t);
     }
   }
-  // Same projection as project(), inlined into the hot loop that runs on every scroll frame.
+  // Same projection as project(), inlined into the hot loop (runs once per camera step, then cached).
   function placeCar(pitchD) {
     for (var j = 0; j < carList.length; j++) { carV[carList[j]] = -1; zb[carList[j]] = -1e9; }
     carList.length = 0;
@@ -246,15 +256,46 @@
     c2d.moveTo(x + dotR, y); c2d.arc(x, y, dotR, 0, Math.PI * 2);
   }
 
+  // Projection for one camera step: which grid cells the car covers and each dot's brightness
+  // level (shading plus outline/gap treatment), cached so scrolling back and forth costs nothing.
+  function projection(step) {
+    if (cache[step]) return cache[step];
+    placeCar(step * PITCH_STEP);
+    var cells = new Int32Array(carList.length), lv = new Uint8Array(carList.length), n = 0;
+    for (var j = 0; j < carList.length; j++) {
+      var c = carList[j], kind = edgeKind(c), v = carV[c];
+      v = kind < 0 ? BG_GRAY + (v - BG_GRAY) * 0.25 : kind > 0 ? Math.max(v, OUTLINE) : BG_GRAY + (v - BG_GRAY) * 0.62;
+      var level = Math.round((v - BG_GRAY) / (255 - BG_GRAY) * (LEVELS - 1));
+      if (level <= 0) continue; // same as the background dot underneath
+      cells[n] = c; lv[n] = level; n++;
+    }
+    return (cache[step] = { cells: cells.subarray(0, n), lv: lv.subarray(0, n) });
+  }
+  // Fill the projection cache for every camera step in idle time after load.
+  function prefill(token) {
+    var lo = Math.round(PITCH_LOW / PITCH_STEP), hi = Math.round(PITCH_HIGH / PITCH_STEP), step = lo;
+    var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 40); };
+    (function next() {
+      if (token !== buildToken || reduce.matches) return;
+      while (step <= hi && cache[step]) step++;
+      if (step > hi) return;
+      projection(step);
+      idle(next);
+    })();
+  }
+
   function build() {
-    W = window.innerWidth; H = window.innerHeight;
+    var rect = box.getBoundingClientRect();            // CSS sizes it to the large viewport (stable on iOS)
+    W = Math.round(rect.width) || window.innerWidth; H = Math.round(rect.height) || window.innerHeight;
     if (!W || !H) return;
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    buildToken++;
+    var mobile = coarsePointer || W < 640;
+    dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 2);
+    gridCanvas.width = carCanvas.width = Math.round(W * dpr);
+    gridCanvas.height = carCanvas.height = Math.round(H * dpr);
     var narrow = W < 640, header = document.querySelector("header.site"), headerH = header ? header.offsetHeight : 0;
 
-    // size the car once, from its revealed (low) view, while making sure the raised starting
-    // view still fits on screen; the scale never changes while scrolling
+    // size the car once, from its revealed (low) view; the scale never changes while scrolling
     var coarse = samples(24);
     function extent(p) {
       var e = { w: 0, top: 1e9, bot: -1e9 };
@@ -279,20 +320,22 @@
     cols = Math.floor(W / sp) + 1; rows = Math.floor(H / sp) + 1;
     gox = (W - (cols - 1) * sp) / 2; goy = (H - (rows - 1) * sp) / 2;
     var cells = cols * rows;
-    baseV = new Float32Array(cells); carV = new Float32Array(cells).fill(-1); zb = new Float32Array(cells).fill(-1e9); cellPart = new Uint8Array(cells); carList = [];
+    carV = new Float32Array(cells).fill(-1); zb = new Float32Array(cells).fill(-1e9); cellPart = new Uint8Array(cells); carList = [];
     model = cull(samples(sp / scale / 1.2));
-    placedPitch = null;
+    cache = {}; layerStep = null; lastLevel = "";
 
-    // static background grid, drawn once
-    bg.width = canvas.width; bg.height = canvas.height;
-    var b = bg.getContext("2d");
-    b.setTransform(dpr, 0, 0, dpr, 0, 0);
-    b.fillStyle = gray(BG_GRAY);
-    b.beginPath();
-    for (var c = 0; c < cells; c++) dot(b, c);
-    b.fill();
-    last = "";
+    // colour lookup table and the resting grid (drawn once)
+    LUT = [];
+    for (var l = 0; l < LEVELS; l++) LUT.push(gray(BG_GRAY + (255 - BG_GRAY) * l / (LEVELS - 1)));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = gray(BG_GRAY);
+    ctx.beginPath();
+    for (var c = 0; c < cells; c++) dot(ctx, c);
+    ctx.fill();
+
+    measure();
     update();
+    prefill(buildToken);
   }
 
   /* ---------- Drawing ---------- */
@@ -311,35 +354,30 @@
   }
   function gray(v) { v = Math.round(v); return "rgb(" + v + "," + v + "," + Math.min(255, v + 3) + ")"; }
 
-  function render(pitchD, level) {
-    if (!model) return;
-    var j, c;
-    if (pitchD !== placedPitch) { // reuse the projection while only brightness changes
-      placeCar(pitchD); placedPitch = pitchD;
-      for (j = 0; j < carList.length; j++) {
-        c = carList[j];
-        var kind = edgeKind(c), v = carV[c];
-        baseV[j] = kind < 0 ? BG_GRAY + (v - BG_GRAY) * 0.25 : kind > 0 ? Math.max(v, OUTLINE) : BG_GRAY + (v - BG_GRAY) * 0.62;
-      }
-    }
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(bg, 0, 0);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var buckets = [];
-    for (j = 0; j < carList.length; j++) {
-      var g = Math.round((BG_GRAY + (baseV[j] - BG_GRAY) * level) / 2);
-      if (g * 2 <= BG_GRAY) continue; // same as the background dot already drawn
-      (buckets[g] || (buckets[g] = [])).push(carList[j]);
-    }
-    for (var k = 0; k < buckets.length; k++) {
-      var list = buckets[k];
+  // Draws the car at full brightness into its own layer; only needed when the camera step changes.
+  function drawLayer(step) {
+    var p = projection(step), buckets = [], j;
+    for (j = 0; j < p.cells.length; j++) (buckets[p.lv[j]] || (buckets[p.lv[j]] = [])).push(p.cells[j]);
+    lctx.setTransform(1, 0, 0, 1, 0, 0);
+    lctx.clearRect(0, 0, carCanvas.width, carCanvas.height);
+    lctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (var l = 1; l < LEVELS; l++) {
+      var list = buckets[l];
       if (!list) continue;
-      ctx.fillStyle = gray(k * 2);
-      ctx.beginPath();
-      for (j = 0; j < list.length; j++) dot(ctx, list[j]);
-      ctx.fill();
+      lctx.fillStyle = LUT[l];
+      lctx.beginPath();
+      for (j = 0; j < list.length; j++) dot(lctx, list[j]);
+      lctx.fill();
     }
+    layerStep = step;
+  }
+  // One frame: redraw the car only if the camera stepped, then set its brightness as opacity.
+  // The full-brightness car at opacity `level` over the gray grid gives gray + (car - gray) * level,
+  // the same result as recolouring every dot.
+  function render(step, level) {
+    if (step !== layerStep) drawLayer(step);
+    var l = level.toFixed(3);
+    if (l !== lastLevel) { carCanvas.style.opacity = l; lastLevel = l; }
   }
 
   /* ---------- Scroll choreography ---------- */
@@ -351,36 +389,47 @@
     var pad = first ? first.getBoundingClientRect().top - hero.getBoundingClientRect().bottom : 0;
     hero.style.setProperty("--car-gap", Math.round(Math.max(0, carBot - carTop + 2 * gapMargin - pad)) + "px");
   }
+  // Document position where the space under the title starts; measured once, not on every scroll frame.
+  function measure() {
+    var y = window.scrollY || window.pageYOffset || 0;
+    spaceTop = copy ? copy.getBoundingClientRect().bottom + y : hero.getBoundingClientRect().top + y + H;
+  }
   function update() {
     pending = 0;
+    if (document.hidden || !model) return;
     var vh = H, y = window.scrollY || window.pageYOffset || 0;
-    // scroll position where the space under the title lines up with the car: title just above it, content just below
-    var spaceTop = copy ? copy.getBoundingClientRect().bottom + y : hero.getBoundingClientRect().top + y + vh;
-    var revealEnd = Math.max(1, spaceTop - (carTop - gapMargin));
+    var revealEnd = Math.max(1, spaceTop - (carTop - gapMargin)); // title just above the car, content just below
     var reveal = smooth(y / (revealEnd * 0.9));                   // name fades, car lights up, camera lowers
     var dim = smooth((y - revealEnd) / Math.max(1, (carBot - carTop) * 0.8)); // content covers the car, layer fades to black
     var level = START_LEVEL + (1 - START_LEVEL) * reveal;
     var pitch = reduce.matches ? PITCH_LOW : PITCH_HIGH + (PITCH_LOW - PITCH_HIGH) * reveal;
-    if (copy) copy.style.opacity = String(1 - smooth(y / (vh * 0.4)));
-    canvas.style.opacity = String(1 - dim);
+    var copyOpacity = (1 - smooth(y / (vh * 0.4))).toFixed(3), fade = (1 - dim).toFixed(3);
+    if (copy && copyOpacity !== lastCopy) { copy.style.opacity = copyOpacity; lastCopy = copyOpacity; }
+    if (fade !== lastFade) { box.style.opacity = fade; lastFade = fade; }
     if (dim >= 1) return; // fully faded: nothing to draw
-    var key = pitch.toFixed(2) + "|" + level.toFixed(3);
-    if (key === last) return;
-    last = key;
-    render(pitch, level);
+    render(Math.round(pitch / PITCH_STEP), level);
   }
   function schedule() { if (!pending) pending = requestAnimationFrame(update); }
   window.addEventListener("scroll", schedule, { passive: true });
 
+  // Rebuild only when the width changes. Height-only changes (the iOS toolbar showing and hiding)
+  // are ignored: the canvas is sized to the large viewport, so it never needs to grow. On desktop
+  // (fine pointer), where the height only changes when the window itself is resized, that rebuilds too.
   var timer = 0;
   window.addEventListener("resize", function () {
     clearTimeout(timer);
     timer = setTimeout(function () {
-      // rebuild on a real size change; small height changes (mobile address bar) just re-run the scroll update
-      if (window.innerWidth !== W || Math.abs(window.innerHeight - H) > 100) build(); else schedule();
-    }, 150);
+      var r = box.getBoundingClientRect();
+      if (Math.round(r.width) !== W || (!coarsePointer && Math.abs(Math.round(r.height) - H) > 1)) build();
+      else { measure(); schedule(); }
+    }, 200);
+  }, { passive: true });
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) { if (pending) cancelAnimationFrame(pending); pending = 0; }
+    else schedule();
   });
-  function refresh() { last = ""; update(); }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { layoutGap(); measure(); schedule(); });
+  function refresh() { update(); }
   if (reduce.addEventListener) reduce.addEventListener("change", refresh);
   else if (reduce.addListener) reduce.addListener(refresh);
 

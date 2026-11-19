@@ -64,7 +64,8 @@ nav a[aria-current=page],.has-sub.is-current>a{color:var(--text);text-decoration
 /* With the dotted car (hero-car.js): a fixed full-screen layer behind the home page.
    The hero is the title screen plus a space below it whose height hero-car.js sets
    (--car-gap) to match the car on this screen, so the content arrives just under the car. */
-canvas.hero-car{position:fixed;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0}
+.hero-car{position:fixed;left:0;top:0;width:100%;height:100vh;height:100lvh;pointer-events:none;z-index:0}
+.hero-car canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
 body.has-hero-car main,body.has-hero-car footer.site{position:relative;z-index:1}
 body.has-hero-car #hero{display:block;min-height:0;padding-bottom:var(--car-gap,100vh);border-bottom:0}
 body.has-hero-car #hero .wrap{min-height:calc(100vh - 3.75rem);display:flex;flex-direction:column;justify-content:center}
