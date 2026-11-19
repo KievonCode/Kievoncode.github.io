@@ -7,7 +7,7 @@ window.SITE = {
   name: "Kevin Chang",
   tagline: "Mechanical and Artificial Intelligence Systems Engineering student at Western University",
   email: "kevinchang1822@gmail.com",
-  links: { linkedin: "https://www.linkedin.com/in/kevin-chang-99557b300", github: "" },  // paste full URLs
+  links: { linkedin: "https://www.linkedin.com/in/kevin-chang-99557b300", github: "https://github.com/kievoncode" },  // paste full URLs
 
   bio: [
     "I’m an engineering student at Western University, studying Mechanical Engineering and Artificial Intelligence Systems Engineering.",
@@ -17,7 +17,7 @@ window.SITE = {
   projects: [
     {
       id: "formula", nav: "Formula", title: "Western Formula Racing",
-      meta: "Team member",
+      meta: "Mechanical Team Member",
       summary: "CAD and analyze components using FEA in SolidWorks, manufactured carbon fiber components, performed pre competition checklists.",
       sections: [
         { heading: "Rear Wing Swan Mount", text: [
@@ -95,8 +95,7 @@ window.SITE = {
         { heading: "Presentation", text: [
           "Our design team presented our aquaponics system at Western University's ES1050 Design Showcase, and went through 3 judging sessions, where walked through our design process and answered questions about our final design."],
           photos: [
-            { src: "images/aquaponics-presentation-board.jpg", alt: "Aquaponics project presentation board at the showcase", caption: "Aquaponics project presentation board" },
-            { src: "images/aquaponics-presentation-team.jpg", alt: "Aquaponics project team at the showcase", caption: "Aquaponics project team" }
+            { src: "images/aquaponics-presentation-board.jpg", alt: "Aquaponics project presentation board at the showcase", caption: "Aquaponics project presentation board" }
           ] }
       ],
       photos: []
@@ -121,22 +120,54 @@ window.SITE = {
   ],
 
   experience: [
-    { title: "Mechanical Weapons Team Lead", org: "WE First, Bot Brawl", dates: "Nov 2026 to present", page: "botbrawl" },
-    { title: "Team Member", org: "Western Formula Racing", dates: "Sep 2025 to present", page: "formula" },
-    { title: "Team Member", org: "Western Baja Racing", dates: "Nov 2026", page: "baja" },
-    { title: "Quantitative Analyst Intern", org: "LXC Technologies (remote)", dates: "Jun to Aug 2026", page: "quant-research" }
+    { title: "Mechanical Weapons Team Lead", org: "WE First – Bot Brawl", location: "London, ON", dates: "November 2026 – Present", page: "botbrawl",
+      bullets: [
+        "Developed an asymmetric horizontal spinner weapon blade concept, balancing the center of mass to maintain stability; tested balance with a 3D-printed prototype",
+        "Taught team members general concepts of developing combat robot weapons, including gyroscopic effects, reusability of parts, bite angle, and asymmetry"] },
+    { title: "Rear Suspension and Brakes Team Member", org: "Western Baja Racing", location: "London, ON", dates: "October 2026 – Present", page: "baja",
+      bullets: [
+        "Researched brake line routing based on previous years’ cars and new rulebook to develop the current design",
+        "Modeled the front and rear brake line routes for this year’s car in CAD in reference to new placement of other components for the new chassis",
+        "Designed and modeled mounting tabs of multiple specifications for suspension arms and shocks"] },
+    { title: "Mechanical Team Member", org: "Western Formula Racing", location: "London, ON", dates: "September 2025 – November 2026", page: "formula",
+      bullets: [
+        "Worked on a new rear wing swan mount design concept, fixing the mount that failed in the previous season; used FEA to ensure the new design would withstand greater forces",
+        "Manufactured carbon aerodynamic components; assisted in the carbon layup process and sanding",
+        "Assembled various components on chassis; drilled mounting holes and mounted the rear jack bar and electrical components inside the chassis",
+        "Completed mock safety and rulebook checks prior to competitions"] },
+    { title: "Quantitative Analyst Intern", org: "LXC Technologies", location: "Remote", dates: "June 2026 – August 2026", page: "quant-research",
+      bullets: [
+        "Integrated a local LLM into a Python program to research upstream and downstream supply chains of a large list of companies",
+        "Developed a Python program to filter supply chain data and previous earnings data for the highest correlation between suppliers, and backtested various trading strategies against historical data"] }
   ],
 
   education: [
-    { title: "B.E.Sc. Mechanical Engineering", org: "Western University. Dean’s Honor List, 82.5% YWA", dates: "Sep 2025 to Apr 2030" },
-    { title: "B.E.Sc. Artificial Intelligence Systems Engineering", org: "Western University", dates: "Sep 2026 to Apr 2030" }
+    { title: "Bachelor of Engineering, Mechanical Engineering", org: "Western University", location: "London, ON", dates: "September 2025 – April 2030",
+      bullets: ["Dean’s Honor List, 82.5% YWA, 83.8% Core YWA", "Certifications: Certified SolidWorks Associate"] },
+    { title: "Bachelor of Engineering, Artificial Intelligence Systems Engineering", org: "Western University", location: "London, ON", dates: "September 2026 – April 2030" }
   ],
+
+  // Projects section of the resume (shown on resume.html)
+  resumeProjects: [
+    { title: "Aquaponics System", tools: "OnShape", dates: "January 2026 – April 2026", page: "aquaponics",
+      bullets: [
+        "Generated multiple concepts for an efficient aquaponics system running off local wastewater",
+        "Designed a fully modular system with OnShape",
+        "Presented research and design information as a design team member"] }
+  ],
+
+  /* Site structure (used by main.js for grouping, navigation and links). */
+  categories: { formula: "Student teams", baja: "Student teams", botbrawl: "Student teams", aquaponics: "Course projects", "quant-research": "Internships" },
+  internship: {
+    project: "quant-research",  // project whose text is shown on internship.html
+    title: "Quantitative Analyst Intern, LXC Technologies"
+  },
+  resumePdf: "Kevin_Chang_Resume.pdf",  // PDF in the repo root
 
   skills: {
     Software: ["Python", "Java", "C++", "HTML", "CSS", "PHP", "OnShape", "SolidWorks", "MATLAB"],
     Equipment: ["Lathe", "Mill"],
     Languages: ["English", "Mandarin"],
-    Certification: ["Certified SOLIDWORKS Associate (CSWA)"],
     Interests: ["Motorsports", "Robotics", "Photography", "Videography"]
   }
 };
