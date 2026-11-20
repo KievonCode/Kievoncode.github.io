@@ -70,6 +70,9 @@ body.has-hero-car main,body.has-hero-car footer.site{position:relative;z-index:1
 body.has-hero-car #hero{display:block;min-height:0;padding-bottom:var(--car-gap,100vh);border-bottom:0}
 body.has-hero-car #hero .wrap{min-height:calc(100vh - 3.75rem);display:flex;flex-direction:column;justify-content:center;will-change:opacity}
 .hero-car,.hero-car canvas{will-change:opacity}
+/* No rubber-band bounce past the top or bottom of the home page, so the page never pulls
+   away from the header and shows the fixed dot layer behind it. */
+html:has(body.has-hero-car),body.has-hero-car{overscroll-behavior-y:none}
 #hero h1{font-size:clamp(3.5rem,13vw,8.5rem);line-height:.95;letter-spacing:-.01em;margin-bottom:1.5rem}
 #hero .lead{font-size:clamp(1.1rem,2.2vw,1.35rem)}
 
