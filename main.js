@@ -13,8 +13,10 @@
     k.flat().forEach((c) => e.append(c));
     return e;
   };
-  const intern = S.internship || {};
-  const url = (id) => (id === "home" ? "index.html" : id === intern.project ? "internship.html" : id + ".html");
+  // Internships (data.js "internships"): one shared page, internship.html?id=<project id>.
+  const interns = S.internships || (S.internship ? [S.internship] : []);
+  const isIntern = (id) => interns.some((x) => x.project === id);
+  const url = (id) => (id === "home" ? "index.html" : isIntern(id) ? "internship.html?id=" + encodeURIComponent(id) : id + ".html");
   const wrap = (...k) => h("div", { class: "wrap" }, ...k);
   const section = (title, ...body) => h("section", {}, h("h2", {}, title), ...body);
   const list = (a) => h("ul", {}, a.map((x) => h("li", {}, x)));
@@ -22,9 +24,9 @@
   const readMore = (href, what) => h("a", { href }, "Read more", hidden(" about " + what));
   const linkOrSoon = (label, href) => href ? h("a", { href }, label) : h("span", { class: "soon" }, label + " (coming soon)");
 
-  const navProjects = S.projects.filter((p) => p.id !== intern.project);
-  const internProject = S.projects.find((p) => p.id === intern.project);
-  const internExp = S.experience.find((x) => x.page === intern.project);
+  const navProjects = S.projects.filter((p) => !isIntern(p.id));
+  // the internship shown on internship.html: ?id=..., or the first one listed
+  const internId = page === "internship" ? (new URLSearchParams(location.search).get("id") || (interns[0] || {}).project) : null;
   const category = (p) => (S.categories || {})[p.id] || "Projects";
 
   /* ---------- Photos ---------- */
@@ -36,17 +38,27 @@
 
   /* ---------- Header and navigation ---------- */
   const cur = (id) => (id === page ? "page" : null);
-  const inProjects = navProjects.some((p) => p.id === page);
   const homeLink = h("a", { href: "index.html", "aria-current": cur("home") }, "Home");
   const toggle = h("button", { type: "button", class: "menu-toggle", "aria-expanded": "false", "aria-controls": "site-nav" }, "Menu");
-  // Projects is a section of the home page, not a page of its own.
-  const projectsLink = h("a", { href: "index.html#projects" }, "Projects");
-  const projItem = h("li", { class: "has-sub" + (inProjects ? " is-current" : "") }, projectsLink,
-    h("ul", { class: "sub" }, navProjects.map((p) => h("li", {}, h("a", { href: url(p.id), "aria-current": cur(p.id) }, p.nav)))));
+  // A top-bar item with a hover dropdown. Projects and Internships are sections of the
+  // home page; their dropdowns link to the individual pages.
+  const dropdown = (label, href, items, current) => {
+    const link = h("a", { href }, label);
+    const item = h("li", { class: "has-sub" + (current ? " is-current" : "") }, link,
+      h("ul", { class: "sub" }, items.map(([text, to, here]) => h("li", {}, h("a", { href: to, "aria-current": here ? "page" : null }, text)))));
+    item.addEventListener("keydown", (e) => { if (e.key === "Escape") { item.classList.add("closed"); link.focus(); } });
+    item.addEventListener("mouseenter", () => item.classList.remove("closed"));
+    item.addEventListener("focusout", (e) => { if (!item.contains(e.relatedTarget)) item.classList.remove("closed"); });
+    return { item, link };
+  };
+  const projNav = dropdown("Projects", "index.html#projects",
+    navProjects.map((p) => [p.nav, url(p.id), p.id === page]), navProjects.some((p) => p.id === page));
+  const internNav = dropdown("Internships", "index.html#internships",
+    interns.map((x) => [x.nav || x.title, url(x.project), x.project === internId]), page === "internship");
   const nav = h("nav", { id: "site-nav", "aria-label": "Main" }, h("ul", { class: "menu" },
     h("li", {}, homeLink),
-    projItem,
-    h("li", {}, h("a", { href: "internship.html", "aria-current": cur("internship") }, "Internship Experience")),
+    projNav.item,
+    internNav.item,
     h("li", {}, h("a", { href: "resume.html", "aria-current": cur("resume") }, "Resume"))));
   document.getElementById("site-header").append(wrap(h("a", { class: "brand", href: "index.html" }, S.name), toggle, nav));
   toggle.addEventListener("click", () => {
@@ -54,11 +66,6 @@
     toggle.setAttribute("aria-expanded", String(open));
     nav.classList.toggle("open", open);
   });
-  projItem.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { projItem.classList.add("closed"); projectsLink.focus(); }
-  });
-  projItem.addEventListener("mouseenter", () => projItem.classList.remove("closed"));
-  projItem.addEventListener("focusout", (e) => { if (!projItem.contains(e.relatedTarget)) projItem.classList.remove("closed"); });
 
   /* ---------- Footer ----------
      Contact links on every page except the resume, which already lists them at the top;
@@ -79,7 +86,7 @@
     readMore(url(p.id), p.title));
   const projectGroups = (level) => {
     const groups = {};
-    S.projects.forEach((p) => (groups[category(p)] = groups[category(p)] || []).push(p));
+    navProjects.forEach((p) => (groups[category(p)] = groups[category(p)] || []).push(p));
     return Object.entries(groups).map(([name, ps]) => h("div", { class: "project-group" },
       h("h" + level, {}, name),
       h("div", { class: "project-grid" }, ps.map((p) => projectBlock(p, level + 1)))));
@@ -107,7 +114,18 @@
       x.bullets ? list(x.bullets) : "",
       x.page ? h("p", { class: "more" }, readMore(url(x.page), x.title + (org ? ", " + org : ""))) : "");
   };
-  const back = () => h("p", { class: "back" }, h("a", { href: "index.html#projects" }, "Back to projects"));
+  const back = (to) => to === "internships"
+    ? h("p", { class: "back" }, h("a", { href: "index.html#internships" }, "Back to internships"))
+    : h("p", { class: "back" }, h("a", { href: "index.html#projects" }, "Back to projects"));
+  const internBlock = (x) => {
+    const p = S.projects.find((q) => q.id === x.project) || {};
+    const exp = S.experience.find((e) => e.page === x.project);
+    return h("article", { class: "project-block" },
+      h("h3", {}, x.title || p.title),
+      exp ? h("p", { class: "meta" }, exp.dates) : "",
+      p.summary ? h("p", {}, p.summary) : "",
+      readMore(url(x.project), x.title || p.title));
+  };
 
   /* ---------- Pages ---------- */
   if (page === "home") {
@@ -115,16 +133,21 @@
     app.append(
       h("div", { id: "hero" }, wrap(h("h1", {}, S.name), h("p", { class: "lead" }, S.tagline))),
       wrap(
-        h("section", { id: "projects" }, h("h2", {}, "Projects"), projectGroups(3))));
+        h("section", { id: "projects" }, h("h2", {}, "Projects"), projectGroups(3)),
+        interns.length ? h("section", { id: "internships" }, h("h2", {}, "Internships"),
+          h("div", { class: "project-grid" }, interns.map(internBlock))) : ""));
   } else if (page === "internship") {
-    document.title = "Internship Experience | " + S.name;
-    const [, loc] = internExp ? splitOrg(internExp) : [];
+    const x = interns.find((i) => i.project === internId) || interns[0] || {};
+    const p = S.projects.find((q) => q.id === x.project);
+    const exp = S.experience.find((e) => e.page === x.project);
+    const [, loc] = exp ? splitOrg(exp) : [];
+    document.title = (x.title || "Internships") + " | " + S.name;
     app.append(wrap(
-      h("div", { class: "page-head" }, h("h1", {}, intern.title),
-        internExp ? h("p", { class: "meta" }, internExp.dates, loc ? h("span", { class: "exp-loc" }, " · " + loc.replace(/[()]/g, "")) : "") : "",
-        internProject ? h("p", { class: "lead" }, internProject.summary) : ""),
-      internProject ? projectBody(internProject) : "",
-      back()));
+      h("div", { class: "page-head" }, h("h1", {}, x.title || (p && p.title) || "Internships"),
+        exp ? h("p", { class: "meta" }, exp.dates, loc ? h("span", { class: "exp-loc" }, " · " + loc.replace(/[()]/g, "")) : "") : "",
+        p ? h("p", { class: "lead" }, p.summary) : ""),
+      p ? projectBody(p) : "",
+      back("internships")));
   } else if (page === "resume") {
     // The resume, word for word as in the PDF.
     document.title = "Resume | " + S.name;
@@ -149,41 +172,51 @@
       back()));
   }
 
-  /* ---------- Home: Projects is a section, reached by scrolling ---------- */
+  /* ---------- Home: Projects and Internships are sections, reached by scrolling ---------- */
   if (page === "home") {
-    const target = document.getElementById("projects"), hero = document.getElementById("hero");
-    const header = document.getElementById("site-header");
+    const hero = document.getElementById("hero"), header = document.getElementById("site-header");
+    // top-bar items for each home section, in page order
+    const sections = [
+      { key: "projects", el: document.getElementById("projects"), nav: projNav },
+      { key: "internships", el: document.getElementById("internships"), nav: internNav }
+    ].filter((x) => x.el);
     const reduced = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
     const closeMenu = () => { toggle.setAttribute("aria-expanded", "false"); nav.classList.remove("open"); };
-    const projectsY = () => Math.round(target.getBoundingClientRect().top + window.scrollY - header.offsetHeight);
+    const topOf = (el) => Math.round(el.getBoundingClientRect().top + window.scrollY - header.offsetHeight);
+    const projectsY = () => (sections[0] ? topOf(sections[0].el) : 0);
 
-    // Top bar: Projects is white and underlined once the section is coming up, Home before that.
+    // Top bar: a section's item is white and underlined once that section is coming up; Home before.
     let active = null, lockUntil = 0;
-    const setActive = (projects) => {
-      if (projects === active) return;
-      active = projects;
-      projItem.classList.toggle("is-current", projects);
-      if (projects) homeLink.removeAttribute("aria-current"); else homeLink.setAttribute("aria-current", "page");
+    const setActive = (key) => {
+      if (key === active) return;
+      active = key;
+      sections.forEach((x) => x.nav.item.classList.toggle("is-current", x.key === key));
+      if (key === "home") homeLink.setAttribute("aria-current", "page"); else homeLink.removeAttribute("aria-current");
     };
     const spy = () => {
       if (performance.now() < lockUntil) return; // a glide already chose; don't flicker on the way
-      setActive(target.getBoundingClientRect().top <= window.innerHeight * 0.65);
+      let key = "home";
+      const line = window.innerHeight * 0.65;
+      sections.forEach((x) => { if (x.el.getBoundingClientRect().top <= line) key = x.key; });
+      // at the very bottom the last section is current even if it is too short to reach the line
+      if (sections.length && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2)
+        key = sections[sections.length - 1].key;
+      setActive(key);
     };
-    const glideTo = (y, projects) => {
-      setActive(projects);
+    const glideTo = (y, key) => {
+      setActive(key);
       lockUntil = performance.now() + 1000;
       window.scrollTo({ top: Math.max(0, Math.round(y)), behavior: reduced() ? "auto" : "smooth" });
     };
 
-    // the nav buttons scroll this page instead of loading another one, and swap the top bar at once
-    const go = (projects) => (e) => {
+    // the nav buttons scroll this page instead of loading another one, and swap the top bar at once;
+    // a clicked dropdown closes and opens again the next time the mouse moves onto it
+    homeLink.addEventListener("click", (e) => { e.preventDefault(); closeMenu(); glideTo(0, "home"); });
+    sections.forEach((x) => x.nav.link.addEventListener("click", (e) => {
       e.preventDefault(); closeMenu();
-      // close the Projects dropdown after a click; it opens again the next time the mouse moves onto it
-      projItem.classList.add("closed"); e.currentTarget.blur();
-      glideTo(projects ? projectsY() : 0, projects);
-    };
-    projectsLink.addEventListener("click", go(true));
-    homeLink.addEventListener("click", go(false));
+      x.nav.item.classList.add("closed"); e.currentTarget.blur();
+      glideTo(topOf(x.el), x.key);
+    }));
 
     // Snap: when scrolling comes to rest anywhere between the fully shown car (hero-car.js stores
     // that scroll position on #hero as data-reveal-y) and the top of Projects, glide on in the
@@ -191,10 +224,10 @@
     // Nothing else about scrolling is changed. Skipped for reduced motion.
     let lastY = window.scrollY, dir = 0, idle = 0, touching = false;
     const settle = () => {
-      if (touching || reduced() || performance.now() < lockUntil) return;
+      if (touching || reduced() || performance.now() < lockUntil || !sections.length) return;
       const carY = +(hero && hero.dataset.revealY) || 0, projY = projectsY(), y = window.scrollY;
       if (!carY || projY <= carY + 8 || y <= carY + 4 || y >= projY - 4) return;
-      glideTo(dir >= 0 ? projY : carY, dir >= 0);
+      glideTo(dir >= 0 ? projY : carY, dir >= 0 ? sections[0].key : "home");
     };
     const hasScrollEnd = "onscrollend" in window;
     const later = () => { clearTimeout(idle); idle = setTimeout(settle, 150); };
@@ -210,11 +243,12 @@
     window.addEventListener("touchend", () => { touching = false; if (!hasScrollEnd) later(); }, { passive: true });
     window.addEventListener("resize", spy, { passive: true });
 
-    // arriving from another page's Projects link (index.html#projects): go to the section once the
-    // layout has settled, then drop the #projects from the address so a reload starts at the top
-    if (location.hash === "#projects") {
-      projItem.classList.add("closed"); // the cursor is still on the Projects button from the click
-      const jump = () => { window.scrollTo(0, projectsY()); lastY = window.scrollY; setActive(true); };
+    // arriving from another page's top-bar link (index.html#projects or #internships): go to the
+    // section once the layout has settled, then drop the # from the address so a reload starts at the top
+    const arrive = sections.find((x) => "#" + x.key === location.hash);
+    if (arrive) {
+      arrive.nav.item.classList.add("closed"); // the cursor is still on the button from the click
+      const jump = () => { window.scrollTo(0, topOf(arrive.el)); lastY = window.scrollY; setActive(arrive.key); lockUntil = performance.now() + 300; };
       window.addEventListener("load", () => {
         jump();
         if (document.fonts && document.fonts.ready) document.fonts.ready.then(jump);

@@ -155,11 +155,16 @@ window.SITE = {
   ],
 
   /* Site structure (used by main.js for grouping, navigation and links). */
-  categories: { formula: "Student teams", baja: "Student teams", botbrawl: "Student teams", aquaponics: "Course projects", "quant-research": "Internships" },
-  internship: {
-    project: "quant-research",  // project whose text is shown on internship.html
-    title: "Quantitative Analyst Intern, LXC Technologies"
-  },
+  categories: { formula: "Student teams", baja: "Student teams", botbrawl: "Student teams", aquaponics: "Course projects" },
+  /* Internships: each one appears in the home page's Internships section, in the Internships
+     dropdown, and on its own page (internship.html?id=<project id>).
+     To add an internship:
+       1. add a project for it to "projects" above (id, title, summary, sections, photos),
+       2. add its resume entry to "experience" with page: "<that project id>",
+       3. add a line below. "nav" is the name shown in the dropdown. Newest first. */
+  internships: [
+    { project: "quant-research", nav: "LXC Technologies", title: "Quantitative Analyst Intern, LXC Technologies" }
+  ],
   resumePdf: "Kevin_Chang_Resume.pdf",  // PDF in the repo root
 
   skills: {
