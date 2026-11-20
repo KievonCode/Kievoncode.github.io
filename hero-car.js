@@ -98,6 +98,28 @@
     p.thick = 10;
     return p;
   }
+  // Halo: a thin tube, not a solid band. Seen from above it is a narrow teardrop: it starts at
+  // the centre pillar, sweeps out around the driver's head, then curves back in to meet the
+  // roll hoop at the airbox. It sits level just above the cockpit; the slanted centre pillar
+  // holds the front. From the front it reads as a narrow arch.
+  function halo() {
+    var TOP = 300, TUBE = 13, PX = 805, FRONT = 872;
+    // centreline of one side of the hoop (mirrored), front pillar to roll hoop
+    var path = [[FRONT, 0], [884, 30], [905, 48], [940, 58], [980, 58], [1015, 48], [1040, 34], [1058, 22]];
+    var sides = [];
+    for (var i = 0; i < path.length - 1; i++) sides.push(seg(path[i][0], path[i][1], path[i + 1][0], path[i + 1][1], TUBE));
+    var inside = function (x, y) {
+      for (var k = 0; k < sides.length; k++) if (sides[k](x, y)) return true;
+      return x >= PX && x <= FRONT + 4 && Math.abs(y) <= 7;
+    };
+    var top = sym(function (x, h) {
+      if (h <= 7 && x <= FRONT + 4) return 225 + (TOP - 225) * clamp((x - PX) / (FRONT - PX));
+      return TOP;
+    });
+    var p = part(inside, top, 0, PX, 1066, 66, 1.15);
+    p.thick = 12;
+    return p;
+  }
   // Tyres are real cylinders (axis across the car) so they read from the front.
   function tyre(x0, x1, h0, h1) { return { cyl: true, cx: (x0 + x1) / 2, r: (x1 - x0) / 2, h0: h0, h1: h1, tone: 0.32 }; }
 
@@ -141,9 +163,7 @@
     part(poly([772, 282, 800, 287, 975, 240, 975, 212, 780, 232]), flat(100), 24, 772, 975, 287, 0.7),
     part(poly([860, 185, 900, 185, 905, 135, 868, 135]), flat(270), 252, 860, 905, 185),
     part(seg(880, 135, 880, 70, 8), flat(255), 245, 874, 886, 137, 0.8),
-    // halo: hoop around the cockpit plus the front pillar
-    part(sym(function (x, h) { var d = ((x - 955) / 98) * ((x - 955) / 98) + (h / 98) * (h / 98); return (d >= 0.74 && d <= 1) || (x >= 800 && x <= 862 && h <= 7); }),
-      function (x) { return x < 860 ? 225 + (x - 800) * 1.25 : 300; }, 262, 800, 1053, 98, 1.15),
+    halo(),
     // tyres
     tyre(435, 665, 205, 333),
     tyre(1545, 1775, 190, 340),
