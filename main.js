@@ -1,4 +1,11 @@
 (function () {
+  // Always open at the top of the page on load and reload (unless the URL points at an anchor).
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  const toTop = () => { if (!location.hash) window.scrollTo(0, 0); };
+  toTop();
+  window.addEventListener("load", toTop);
+  window.addEventListener("pageshow", (e) => { if (e.persisted) toTop(); });
+
   const S = window.SITE, page = document.body.dataset.page, app = document.getElementById("app");
   const h = (t, a, ...k) => {
     const e = document.createElement(t);

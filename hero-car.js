@@ -20,7 +20,24 @@
   var gridCanvas = document.createElement("canvas"), carCanvas = document.createElement("canvas");
   var ctx = gridCanvas.getContext && gridCanvas.getContext("2d");
   if (!ctx) return;
-  var lctx = carCanvas.getContext("2d");
+
+  // The car is drawn on a background thread when the browser supports it (OffscreenCanvas in a
+  // Web Worker), so a redraw never holds up scrolling. Otherwise it is drawn on the page.
+  var worker = null, local = null;
+  try {
+    if (window.Worker && window.OffscreenCanvas && carCanvas.transferControlToOffscreen && window.Blob && window.URL) {
+      var src = "var P = (" + painter.toString() + ")(), want = null, busy = false;\n" +
+        "onmessage = function (e) { var d = e.data;\n" +
+        "  if (d.setup) { want = null; P.setup(d.setup, d.canvas); return; }\n" +
+        "  want = d; if (!busy) { busy = true; setTimeout(run, 0); } };\n" +
+        "function run() { busy = false; var w = want; want = null; if (w) P.draw(w.cells, w.lv); }";
+      var w = new Worker(URL.createObjectURL(new Blob([src], { type: "text/javascript" })));
+      var off = carCanvas.transferControlToOffscreen();
+      worker = w;
+      worker.postMessage({ setup: { Wd: 1, Hd: 1, cols: 1, colX: [], colP: [], rowY: [], rowP: [], stamps: {}, LUTp: [], off: 1 }, canvas: off }, [off]);
+    }
+  } catch (e) { worker = null; }
+  if (!worker) local = painter();
 
   /* ---------- Tunables ---------- */
   var BG_GRAY = 27;                    // faint background grid on #0f1012
@@ -208,7 +225,6 @@
   var cache = {}, layerStep = null, pending = 0, lastCopy = "", lastFade = "", lastLevel = "", buildToken = 0;
   var PITCH_STEP = 0.25;                              // camera angle is quantized to this (degrees)
   var LEVELS = 64;                                    // brightness levels for car dots (colour lookup table)
-  var LUT = [];
   var coarsePointer = window.matchMedia ? window.matchMedia("(pointer: coarse)").matches : false;
 
   /* ---------- Projection onto the dot grid ----------
@@ -269,17 +285,19 @@
       if (level <= 0) continue; // same as the background dot underneath
       cells[n] = c; lv[n] = level; n++;
     }
-    return (cache[step] = { cells: cells.subarray(0, n), lv: lv.subarray(0, n) });
+    return (cache[step] = { cells: cells.slice(0, n), lv: lv.slice(0, n) });
   }
   // Fill the projection cache for every camera step in idle time after load.
   function prefill(token) {
     var lo = Math.round(PITCH_LOW / PITCH_STEP), hi = Math.round(PITCH_HIGH / PITCH_STEP), step = lo;
     var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 40); };
-    (function next() {
+    (function next(deadline) {
       if (token !== buildToken || reduce.matches) return;
-      while (step <= hi && cache[step]) step++;
-      if (step > hi) return;
-      projection(step);
+      do {
+        while (step <= hi && cache[step]) step++;
+        if (step > hi) return;
+        projection(step);
+      } while (deadline && deadline.timeRemaining && deadline.timeRemaining() > 10);
       idle(next);
     })();
   }
@@ -291,8 +309,8 @@
     buildToken++;
     var mobile = coarsePointer || W < 640;
     dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 2);
-    gridCanvas.width = carCanvas.width = Math.round(W * dpr);
-    gridCanvas.height = carCanvas.height = Math.round(H * dpr);
+    gridCanvas.width = Math.round(W * dpr);
+    gridCanvas.height = Math.round(H * dpr);
     var narrow = W < 640, header = document.querySelector("header.site"), headerH = header ? header.offsetHeight : 0;
 
     // size the car once, from its revealed (low) view; the scale never changes while scrolling
@@ -324,9 +342,8 @@
     model = cull(samples(sp / scale / 1.2));
     cache = {}; layerStep = null; lastLevel = "";
 
-    // colour lookup table and the resting grid (drawn once)
-    LUT = [];
-    for (var l = 0; l < LEVELS; l++) LUT.push(gray(BG_GRAY + (255 - BG_GRAY) * l / (LEVELS - 1)));
+    // pixel buffer and colour lookup table for the car, then the resting grid (drawn once)
+    setupPixels();
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = gray(BG_GRAY);
     ctx.beginPath();
@@ -354,21 +371,91 @@
   }
   function gray(v) { v = Math.round(v); return "rgb(" + v + "," + v + "," + Math.min(255, v + 3) + ")"; }
 
+  // Car dots are written straight into a pixel buffer instead of being drawn as canvas paths.
+  // Each dot is a stamp: the same anti-aliased circle the canvas would draw, rendered once per
+  // sub-pixel position, so the result matches path drawing but costs a few array writes per dot.
+  // The settings are computed here and handed to the painter (in the worker or on the page).
+  function setupPixels() {
+    var Wd = gridCanvas.width, Hd = gridCanvas.height, off = Math.ceil(dotR * dpr) + 1;
+    function grid(n, origin, out, phase, seen) {
+      for (var i = 0; i < n; i++) {
+        var v = dpr * (origin + i * sp), b = Math.floor(v), q = Math.round((v - b) * 16);
+        if (q === 16) { b++; q = 0; }
+        out[i] = b; phase[i] = q; seen[q] = 1;
+      }
+    }
+    var cx = {}, cy = {};
+    var colX = new Int32Array(cols), colP = new Uint8Array(cols), rowY = new Int32Array(rows), rowP = new Uint8Array(rows);
+    grid(cols, gox, colX, colP, cx); grid(rows, goy, rowY, rowP, cy);
+    // one stamp per sub-pixel phase that actually occurs on this grid
+    var stamps = {}, S = 2 * off + 1, c = document.createElement("canvas");
+    c.width = c.height = S;
+    var g = c.getContext("2d", { willReadFrequently: true });
+    Object.keys(cx).forEach(function (qx) {
+      Object.keys(cy).forEach(function (qy) {
+        g.clearRect(0, 0, S, S);
+        g.fillStyle = "#fff";
+        g.beginPath(); g.arc(off + qx / 16, off + qy / 16, dotR * dpr, 0, Math.PI * 2); g.fill();
+        var d = g.getImageData(0, 0, S, S).data, dx = [], dy = [], a = [];
+        for (var y = 0; y < S; y++) for (var x = 0; x < S; x++) {
+          var al = d[(y * S + x) * 4 + 3];
+          if (al) { dx.push(x - off); dy.push(y - off); a.push(al * 16777216); }
+        }
+        stamps[qx * 17 + +qy] = { n: a.length, dx: new Int16Array(dx), dy: new Int16Array(dy), a: new Uint32Array(a) };
+      });
+    });
+    // packed RGB per brightness level (alpha comes from the stamp); little-endian ABGR
+    var LUTp = new Uint32Array(LEVELS);
+    for (var l = 0; l < LEVELS; l++) {
+      var v = Math.round(BG_GRAY + (255 - BG_GRAY) * l / (LEVELS - 1));
+      LUTp[l] = (Math.min(255, v + 3) << 16) | (v << 8) | v;
+    }
+    var cfg = { Wd: Wd, Hd: Hd, cols: cols, colX: colX, colP: colP, rowY: rowY, rowP: rowP, stamps: stamps, LUTp: LUTp, off: off };
+    if (worker) worker.postMessage({ setup: cfg });
+    else local.setup(cfg, carCanvas);
+  }
+
+  // Self-contained (no outside variables) so the same code can run inside the worker.
+  function painter() {
+    var ctx = null, canvas = null, img = null, pix = null, c = null, prev = null;
+    return {
+      setup: function (cfg, cv) {
+        if (cv) { canvas = cv; ctx = canvas.getContext("2d"); }
+        c = cfg; prev = null;
+        canvas.width = c.Wd; canvas.height = c.Hd;
+        img = ctx.createImageData(c.Wd, c.Hd);
+        pix = new Uint32Array(img.data.buffer);
+      },
+      // Clears what the car covered last time, writes the new dots, uploads only that rectangle.
+      draw: function (cells, lv) {
+        var Wd = c.Wd, Hd = c.Hd, cols = c.cols, o = c.off, colX = c.colX, colP = c.colP, rowY = c.rowY, rowP = c.rowP;
+        if (prev) for (var yy = prev[1]; yy <= prev[3]; yy++) pix.fill(0, yy * Wd + prev[0], yy * Wd + prev[2] + 1);
+        var x0 = Wd, y0 = Hd, x1 = -1, y1 = -1;
+        for (var j = 0; j < cells.length; j++) {
+          var cell = cells[j], col = cell % cols, row = (cell - col) / cols;
+          var bx = colX[col], by = rowY[row], st = c.stamps[colP[col] * 17 + rowP[row]], rgb = c.LUTp[lv[j]];
+          if (bx - o < x0) x0 = bx - o; if (bx + o > x1) x1 = bx + o;
+          if (by - o < y0) y0 = by - o; if (by + o > y1) y1 = by + o;
+          var sdx = st.dx, sdy = st.dy, sa = st.a;
+          for (var k = 0; k < st.n; k++) {
+            var x = bx + sdx[k], y = by + sdy[k];
+            if (x < 0 || y < 0 || x >= Wd || y >= Hd) continue;
+            pix[y * Wd + x] = sa[k] | rgb;
+          }
+        }
+        var box = x1 < 0 ? null : [Math.max(0, x0), Math.max(0, y0), Math.min(Wd - 1, x1), Math.min(Hd - 1, y1)];
+        var u = prev && box ? [Math.min(prev[0], box[0]), Math.min(prev[1], box[1]), Math.max(prev[2], box[2]), Math.max(prev[3], box[3])] : (box || prev);
+        if (u) ctx.putImageData(img, 0, 0, u[0], u[1], u[2] - u[0] + 1, u[3] - u[1] + 1);
+        prev = box;
+      }
+    };
+  }
+
   // Draws the car at full brightness into its own layer; only needed when the camera step changes.
   function drawLayer(step) {
-    var p = projection(step), buckets = [], j;
-    for (j = 0; j < p.cells.length; j++) (buckets[p.lv[j]] || (buckets[p.lv[j]] = [])).push(p.cells[j]);
-    lctx.setTransform(1, 0, 0, 1, 0, 0);
-    lctx.clearRect(0, 0, carCanvas.width, carCanvas.height);
-    lctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    for (var l = 1; l < LEVELS; l++) {
-      var list = buckets[l];
-      if (!list) continue;
-      lctx.fillStyle = LUT[l];
-      lctx.beginPath();
-      for (j = 0; j < list.length; j++) dot(lctx, list[j]);
-      lctx.fill();
-    }
+    var p = projection(step);
+    if (worker) worker.postMessage({ cells: p.cells, lv: p.lv });
+    else local.draw(p.cells, p.lv);
     layerStep = step;
   }
   // One frame: redraw the car only if the camera stepped, then set its brightness as opacity.
