@@ -98,6 +98,7 @@
     p.thick = 10;
     return p;
   }
+  function withSteps(p) { p.steps = true; return p; }
   // Halo: a thin tube, not a solid band. Seen from above it is a narrow teardrop: it starts at
   // the centre pillar, sweeps out around the driver's head, then curves back in to meet the
   // roll hoop at the airbox. It sits level just above the cockpit; the slanted centre pillar
@@ -147,15 +148,17 @@
       sym(function (x, h) { var w = table(NOSE_W, x), q = 1 - (h / w) * (h / w); return table(NOSE_Z, x) + table(NOSE_H, x) * Math.sqrt(Math.max(0, q)); }),
       30, 158, 780, 72),
     // chassis, boxy sidepods and engine cover, with a lowered cockpit
-    part(sym(function (x, h) { return x >= 650 && x <= 1665 && h <= table(BODY_W, x); }),
+    withSteps(part(sym(function (x, h) { return x >= 650 && x <= 1665 && h <= table(BODY_W, x); }),
       sym(function (x, h) {
         if (x > 870 && x < 1095 && h < 52) return 150;
         var w = table(BODY_W, x), q = 1 - (h / w) * (h / w), s = 1 - (h / 70) * (h / 70);
         return 30 + 170 * Math.pow(Math.max(0, q), 0.3) + (s > 0 ? table(SPINE, x) * Math.sqrt(s) : 0);
-      }), 22, 650, 1665, 234),
+      }), 22, 650, 1665, 234)),
     // dark openings: sidepod inlets and the airbox above the driver
     part(rect(842, 856, 160, 226), flat(175), 80, 842, 856, 226, 0.12),
-    part(rect(1030, 1044, 0, 28), flat(318), 282, 1030, 1044, 28, 0.12),
+    // airbox intake: a dark arch (flat bottom, rounded top) set into the wall behind the driver
+    part(sym(function (x, h) { return x >= 1030 && x <= 1046 && h <= 30; }),
+      sym(function (x, h) { return 280 + 44 * Math.sqrt(Math.max(0, 1 - (h / 30) * (h / 30))); }), 280, 1030, 1046, 30, 0.12),
     // T-camera on top of the airbox
     part(rect(1075, 1100, 0, 48), flat(380), 370, 1075, 1100, 48),
     part(rect(1082, 1094, 0, 5), flat(370), 330, 1082, 1094, 5),
@@ -227,7 +230,14 @@
           add(x, yy, z, unit([-gx, -gy, 1]));
           for (var d = 0; d < 4; d++) {
             var dx = dirs[d][0], dy = dirs[d][1];
-            if (p.inside(x + dx * st, yy + dy * st)) continue;
+            if (p.inside(x + dx * st, yy + dy * st)) {
+              // a sharp step inside the part (the cockpit's back and side walls) gets a solid wall,
+              // so nothing behind it shows through
+              if (!p.steps) continue;
+              var zn = p.top(x + dx * st, yy + dy * st);
+              if (z - zn > st) for (var zw = zn; zw < z; zw += st) add(x + dx * e, yy + dy * e, zw, [dx, dy, 0]);
+              continue;
+            }
             for (var zz = bot; zz < z; zz += st) add(x + dx * e, yy + dy * e, zz, [dx, dy, 0]);
           }
         }
