@@ -9,11 +9,6 @@ window.SITE = {
   email: "kevinchang1822@gmail.com",
   links: { linkedin: "https://www.linkedin.com/in/kevin-chang-99557b300", github: "https://github.com/kievoncode" },  // paste full URLs
 
-  bio: [
-    "I’m an engineering student at Western University, studying Mechanical Engineering and Artificial Intelligence Systems Engineering.",
-    "I work on racing hardware with Western Formula Racing and Western Baja Racing, lead the mechanical weapons team for a combat robot, and have built Python tools for supply chain research. Outside class I’m into motorsports, robotics, photography and videography."
-  ],
-
   projects: [
     {
       id: "formula", nav: "Formula", title: "Western Formula Racing",
@@ -43,7 +38,7 @@ window.SITE = {
     },
     {
       id: "baja", nav: "Baja", title: "Western Baja Racing",
-      meta: "Rear Suspension and Brakes Team Member",
+      meta: "Rear Suspension Team Member",
       summary: "Researched and designed routing of brake lines, modeled routing in CAD in coordination with other subsystems.",
       sections: [
         { heading: "Brake Lines", text: [
@@ -122,29 +117,32 @@ window.SITE = {
   experience: [
     { title: "Mechanical Weapons Team Lead", org: "WE First – Bot Brawl", location: "London, ON", dates: "November 2026 – Present", page: "botbrawl",
       bullets: [
-        "Developed an asymmetric horizontal spinner weapon blade concept, balancing the center of mass to maintain stability; tested balance with a 3D-printed prototype",
+        "Designed multiple asymmetric horizontal spinner weapon blade concepts, balancing the center of mass to maintain stability; tested balance with 3D-printed prototypes",
+        "Led the development of a two-part hub mount for the weapon blade and pulley, allowing for quick blade swaps and adjustment to pulley ratios",
         "Taught team members general concepts of developing combat robot weapons, including gyroscopic effects, reusability of parts, bite angle, and asymmetry"] },
-    { title: "Rear Suspension and Brakes Team Member", org: "Western Baja Racing", location: "London, ON", dates: "October 2026 – Present", page: "baja",
+    { title: "Rear Suspension Team Member", org: "Western Baja Racing", location: "London, ON", dates: "October 2026 – Present", page: "baja",
       bullets: [
         "Researched brake line routing based on previous years’ cars and new rulebook to develop the current design",
-        "Modeled the front and rear brake line routes for this year’s car in CAD in reference to new placement of other components for the new chassis",
+        "Modeled the front and rear brake line routes for this year’s car in CAD, accounting for the arrangement of other components in the new chassis",
+        "Redesigned mounting bracket for front and rear master cylinders to reduce torsion on mount during hard braking",
         "Designed and modeled mounting tabs of multiple specifications for suspension arms and shocks"] },
     { title: "Mechanical Team Member", org: "Western Formula Racing", location: "London, ON", dates: "September 2025 – November 2026", page: "formula",
       bullets: [
-        "Worked on a new rear wing swan mount design concept, fixing the mount that failed in the previous season; used FEA to ensure the new design would withstand greater forces",
+        "Worked on a new rear wing swan mount design concept, replacing the failed one piece mounts with smaller mounts and support struts; used FEA to ensure the new design would withstand greater forces",
         "Manufactured carbon aerodynamic components; assisted in the carbon layup process and sanding",
         "Assembled various components on chassis; drilled mounting holes and mounted the rear jack bar and electrical components inside the chassis",
         "Completed mock safety and rulebook checks prior to competitions"] },
-    { title: "Quantitative Analyst Intern", org: "LXC Technologies", location: "Remote", dates: "June 2026 – August 2026", page: "quant-research",
+    { title: "Quantitative Analyst Intern", org: "LXC Technologies", location: "(Remote)", dates: "June 2026 – August 2026", page: "quant-research",
       bullets: [
         "Integrated a local LLM into a Python program to research upstream and downstream supply chains of a large list of companies",
         "Developed a Python program to filter supply chain data and previous earnings data for the highest correlation between suppliers, and backtested various trading strategies against historical data"] }
   ],
 
   education: [
-    { title: "Bachelor of Engineering, Mechanical Engineering", org: "Western University", location: "London, ON", dates: "September 2025 – April 2030",
+    { title: "Bachelor of Engineering Science, Mechanical Engineering", org: "Western University", location: "London, ON", dates: "September 2025 – April 2030",
       bullets: ["Dean’s Honor List, 82.5% YWA, 83.8% Core YWA", "Certifications: Certified SolidWorks Associate"] },
-    { title: "Bachelor of Engineering, Artificial Intelligence Systems Engineering", org: "Western University", location: "London, ON", dates: "September 2026 – April 2030" }
+    { title: "Bachelor of Engineering Science, Artificial Intelligence Systems Engineering", org: "Western University", location: "London, ON", dates: "September 2026 – April 2030",
+      bullets: ["Dual Degree"] }
   ],
 
   // Projects section of the resume (shown on resume.html)
@@ -152,7 +150,7 @@ window.SITE = {
     { title: "Aquaponics System", tools: "OnShape", dates: "January 2026 – April 2026", page: "aquaponics",
       bullets: [
         "Generated multiple concepts for an efficient aquaponics system running off local wastewater",
-        "Designed a fully modular system with OnShape",
+        "Designed a fully modular system with OnShape to optimize scalability of the product",
         "Presented research and design information as a design team member"] }
   ],
 

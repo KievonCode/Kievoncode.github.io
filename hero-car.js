@@ -510,6 +510,8 @@
   function measure() {
     var y = window.scrollY || window.pageYOffset || 0;
     spaceTop = copy ? copy.getBoundingClientRect().bottom + y : hero.getBoundingClientRect().top + y + H;
+    // scroll position where the car is fully shown; main.js snaps between here and Projects
+    hero.dataset.revealY = Math.round(Math.max(1, spaceTop - (carTop - gapMargin)) * 0.9);
   }
   function update() {
     pending = 0;
